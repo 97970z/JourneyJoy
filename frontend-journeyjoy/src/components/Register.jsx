@@ -3,6 +3,14 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../baseAPI/api.js";
 import { useAuth } from "../contextAPI/AuthContext.jsx";
+import {
+  Container,
+  TextField,
+  Button,
+  Typography,
+  Paper,
+  Box,
+} from "@mui/material";
 
 function Register() {
   const navigate = useNavigate();
@@ -12,7 +20,7 @@ function Register() {
 
   useEffect(() => {
     if (currentUser) {
-      navigate("/"); // 로그인된 사용자는 홈으로 리다이렉트
+      navigate("/");
     }
   }, [currentUser, navigate]);
 
@@ -23,35 +31,44 @@ function Register() {
         username,
         password,
       });
-      console.log(res.data);
+      navigate("/login");
     } catch (error) {
       console.error(error.response.data);
     }
   };
 
   return (
-    <div>
-      <h2>Register</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Username:</label>
-          <input
-            type="text"
+    <Container maxWidth="sm">
+      <Paper elevation={3} style={{ padding: "20px", marginTop: "20px" }}>
+        <Typography variant="h5" component="h1" gutterBottom>
+          Register
+        </Typography>
+        <form onSubmit={handleSubmit}>
+          <TextField
+            label="Username"
+            variant="outlined"
+            fullWidth
+            margin="normal"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
-        </div>
-        <div>
-          <label>Password:</label>
-          <input
+          <TextField
+            label="Password"
+            variant="outlined"
+            fullWidth
+            margin="normal"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-        </div>
-        <button type="submit">Register</button>
-      </form>
-    </div>
+          <Box display="flex" justifyContent="flex-end" marginTop="16px">
+            <Button type="submit" variant="contained" color="primary">
+              Register
+            </Button>
+          </Box>
+        </form>
+      </Paper>
+    </Container>
   );
 }
 

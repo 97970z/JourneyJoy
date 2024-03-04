@@ -3,6 +3,14 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../baseAPI/api.js";
 import { useAuth } from "../contextAPI/AuthContext.jsx";
+import {
+  Container,
+  TextField,
+  Button,
+  Typography,
+  Paper,
+  Box,
+} from "@mui/material";
 
 function Login() {
   const navigate = useNavigate();
@@ -12,14 +20,13 @@ function Login() {
 
   useEffect(() => {
     if (currentUser) {
-      navigate("/"); // 로그인된 사용자는 홈으로 리다이렉트
+      navigate("/");
     }
   }, [currentUser, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // 로그인 API에 요청 보내기
       const res = await api.post("/auth/login", {
         username,
         password,
@@ -30,33 +37,42 @@ function Login() {
     }
   };
 
-  const handleLogin = (token) => {
-    login(token);
+  const handleLogin = (data) => {
+    login(data.token);
   };
 
   return (
-    <div>
-      <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Username:</label>
-          <input
-            type="text"
+    <Container maxWidth="sm">
+      <Paper elevation={3} style={{ padding: "20px", marginTop: "20px" }}>
+        <Typography variant="h5" component="h1" gutterBottom>
+          Login
+        </Typography>
+        <form onSubmit={handleSubmit}>
+          <TextField
+            label="Username"
+            variant="outlined"
+            fullWidth
+            margin="normal"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
-        </div>
-        <div>
-          <label>Password:</label>
-          <input
+          <TextField
+            label="Password"
+            variant="outlined"
+            fullWidth
+            margin="normal"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-        </div>
-        <button type="submit">Login</button>
-      </form>
-    </div>
+          <Box display="flex" justifyContent="flex-end" marginTop="16px">
+            <Button type="submit" variant="contained" color="primary">
+              Login
+            </Button>
+          </Box>
+        </form>
+      </Paper>
+    </Container>
   );
 }
 
