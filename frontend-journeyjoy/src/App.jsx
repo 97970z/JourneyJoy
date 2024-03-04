@@ -2,9 +2,9 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import { AuthProvider } from "./contextAPI/AuthContext";
-import Register from "./components/Register";
-import Login from "./components/Login";
-import Home from "./components/Home";
+import Register from "./pages/Register";
+import Login from "./pages/Login";
+import Home from "./pages/Home";
 import Navbar from "./components/Navbar/Navbar";
 
 function App() {

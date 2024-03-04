@@ -5,10 +5,10 @@ const api = axios.create({
   baseURL: "http://localhost:5000/api",
 });
 
-// 인터셉터 설정해서 모든 요청에 jwt 토큰을 헤더에 추가
+// 모든 요청에 jwt 토큰을 헤더에 추가
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("jwt");
+    const token = localStorage.getItem("accessToken");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

@@ -1,9 +1,9 @@
-// frontent/src/components/Navbar/Navbar.jsx
+// frontend/src/components/Navbar/Navbar.jsx
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contextAPI/AuthContext";
-import { AppBar, Toolbar, Typography, Button, IconButton } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
+import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
+import LogoutIcon from "@mui/icons-material/Logout";
 
 function Navbar() {
   const navigate = useNavigate();
@@ -15,41 +15,46 @@ function Navbar() {
   };
 
   return (
-    <AppBar position="static">
+    <AppBar
+      position="static"
+      sx={{
+        backgroundColor: "transparent",
+        boxShadow: "none",
+        color: "black",
+      }}
+    >
       <Toolbar>
-        <IconButton edge="start" color="inherit" aria-label="menu">
-          <MenuIcon />
-        </IconButton>
-        <Typography variant="h6" style={{ flexGrow: 1 }}>
-          <Link
-            to="/"
-            style={{
-              color: "inherit",
-              textDecoration: "none",
-              marginRight: "10px",
-            }}
-          >
+        <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: "bold" }}>
+          <Link to="/" style={{ color: "inherit", textDecoration: "none" }}>
             JourneyJoy
           </Link>
         </Typography>
         {!currentUser ? (
-          <>
-            <Button color="inherit" component={Link} to="/register">
+          <Box>
+            <Button
+              component={Link}
+              to="/register"
+              sx={{ color: "black", marginRight: 2 }}
+            >
               Register
             </Button>
-            <Button color="inherit" component={Link} to="/login">
+            <Button component={Link} to="/login" sx={{ color: "black" }}>
               Login
             </Button>
-          </>
+          </Box>
         ) : (
-          <>
-            <Typography variant="body1" style={{ marginRight: "10px" }}>
-              {currentUser.username || "Logged In User"}
+          <Box display="flex" alignItems="center">
+            <Typography variant="body1" sx={{ marginRight: 2 }}>
+              {currentUser.username}
             </Typography>
-            <Button color="inherit" onClick={handleLogout}>
+            <Button
+              startIcon={<LogoutIcon />}
+              onClick={handleLogout}
+              sx={{ color: "black" }}
+            >
               Logout
             </Button>
-          </>
+          </Box>
         )}
       </Toolbar>
     </AppBar>

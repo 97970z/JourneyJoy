@@ -1,7 +1,7 @@
-// frontend/src/components/Login.jsx
+// frontend/src/components/Register.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../baseAPI/api.js";
+import api from "../baseAPI/api";
 import { useAuth } from "../contextAPI/AuthContext.jsx";
 import {
   Container,
@@ -12,11 +12,11 @@ import {
   Box,
 } from "@mui/material";
 
-function Login() {
+function Register() {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const { currentUser, login } = useAuth();
+  const { currentUser } = useAuth();
 
   useEffect(() => {
     if (currentUser) {
@@ -27,25 +27,22 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await api.post("/auth/login", {
+      const res = await api.post("/auth/register", {
         username,
         password,
       });
-      handleLogin(res.data);
+      console.log(res.data);
+      navigate("/login");
     } catch (error) {
       console.error(error.response.data);
     }
-  };
-
-  const handleLogin = (data) => {
-    login(data.token);
   };
 
   return (
     <Container maxWidth="sm">
       <Paper elevation={3} style={{ padding: "20px", marginTop: "20px" }}>
         <Typography variant="h5" component="h1" gutterBottom>
-          Login
+          Register
         </Typography>
         <form onSubmit={handleSubmit}>
           <TextField
@@ -67,7 +64,7 @@ function Login() {
           />
           <Box display="flex" justifyContent="flex-end" marginTop="16px">
             <Button type="submit" variant="contained" color="primary">
-              Login
+              Register
             </Button>
           </Box>
         </form>
@@ -76,4 +73,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default Register;
