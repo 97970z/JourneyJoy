@@ -6,6 +6,7 @@ import express from "express";
 import mongoose from "mongoose";
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+import placeRoutes from "./routes/placeRoutes.js";
 
 const mongoURI = process.env.MONGODB_URI;
 
@@ -26,6 +27,7 @@ mongoose
 
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
+app.use("/api/places", placeRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
