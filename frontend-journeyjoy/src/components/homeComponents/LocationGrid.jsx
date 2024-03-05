@@ -1,4 +1,4 @@
-// frontend/src/components/homeComponents/LocationGrid.jsx
+// frontend/src/components/HomeComponents/LocationGrid.jsx
 import React from "react";
 import { Grid } from "@mui/material";
 import LocationCard from "./LocationCard";

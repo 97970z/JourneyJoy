@@ -1,4 +1,4 @@
-// frontend/src/components/homeComponents/AddLocationButton.jsx
+// frontend/src/components/HomeComponents/AddLocationButton.jsx
 import React from "react";
 import { Box, Button } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";

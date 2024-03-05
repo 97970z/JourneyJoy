@@ -1,5 +1,6 @@
+// frontend/src/components/HomeComponents/SearchBar.jsx
 import React from "react";
-import { Box, TextField, Button } from "@mui/material";
+import { Box } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { StyledTextField, StyledButton } from "./StyledComponents";
 

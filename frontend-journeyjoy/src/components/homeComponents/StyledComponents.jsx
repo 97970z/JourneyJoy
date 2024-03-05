@@ -1,4 +1,4 @@
-// frontend/src/components/homeComponents/StyledComponents.jsx
+// frontend/src/components/HomeComponents/StyledComponents.jsx
 import { styled } from "@mui/system";
 import { Card, CardMedia, TextField, Button } from "@mui/material";
 
@@ -18,20 +18,6 @@ export const StyledCardMedia = styled(CardMedia)({
 export const StyledTextField = styled(TextField)({
   backgroundColor: "rgba(255, 255, 255, 0.8)",
   borderRadius: "4px",
-  ":focus-visible": {
-    outline: "none",
-  },
-  "& .MuiOutlinedInput-root": {
-    "& fieldset": {
-      border: "none",
-    },
-    "&:hover fieldset": {
-      border: "none",
-    },
-    "&.Mui-focused fieldset": {
-      border: "none",
-    },
-  },
 });
 
 export const StyledButton = styled(Button)({
@@ -39,8 +25,8 @@ export const StyledButton = styled(Button)({
   textTransform: "none",
   fontSize: 16,
   padding: "6px 12px",
-  lineHeight: 1.8,
-  backgroundColor: "#2E3B55",
+  lineHeight: 2,
+  backgroundColor: "burlywood",
   fontFamily: [
     "-apple-system",
     "BlinkMacSystemFont",
@@ -54,11 +40,11 @@ export const StyledButton = styled(Button)({
     '"Segoe UI Symbol"',
   ].join(","),
   "&:hover": {
-    backgroundColor: "#556cd6",
+    backgroundColor: "darkkhaki",
     boxShadow: "none",
   },
   "&:active": {
     boxShadow: "none",
-    backgroundColor: "#556cd6",
+    backgroundColor: "darkkhaki",
   },
 });

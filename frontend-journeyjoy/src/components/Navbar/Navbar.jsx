@@ -18,9 +18,8 @@ function Navbar() {
     <AppBar
       position="static"
       sx={{
-        backgroundColor: "transparent",
-        boxShadow: "none",
-        color: "black",
+        color: "common.snow",
+        backgroundColor: "darkkhaki",
       }}
     >
       <Toolbar>
@@ -34,12 +33,12 @@ function Navbar() {
             <Button
               component={Link}
               to="/register"
-              sx={{ color: "black", marginRight: 2 }}
+              sx={{ color: "white", marginRight: 2 }}
             >
-              Register
+              회원가입
             </Button>
-            <Button component={Link} to="/login" sx={{ color: "black" }}>
-              Login
+            <Button component={Link} to="/login" sx={{ color: "white" }}>
+              로그인
             </Button>
           </Box>
         ) : (
@@ -50,7 +49,7 @@ function Navbar() {
             <Button
               startIcon={<LogoutIcon />}
               onClick={handleLogout}
-              sx={{ color: "black" }}
+              sx={{ color: "white" }}
             >
               Logout
             </Button>

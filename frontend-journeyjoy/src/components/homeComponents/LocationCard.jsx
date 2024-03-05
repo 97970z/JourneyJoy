@@ -1,4 +1,4 @@
-// frontend/src/components/homeComponents/LocationCard.jsx
+// frontend/src/components/HomeComponents/LocationCard.jsx
 import React from "react";
 import { Typography, CardContent, CardActions, Button } from "@mui/material";
 import { StyledCard, StyledCardMedia } from "./StyledComponents";

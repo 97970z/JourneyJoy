@@ -1,4 +1,4 @@
-// frontend/src/components/Home.jsx
+// frontend/src/pages/Home.jsx
 import React, { useState } from "react";
 import { Box, Typography, Container } from "@mui/material";
 import SearchBar from "../components/HomeComponents/SearchBar";
@@ -15,33 +15,51 @@ function Home() {
 
   return (
     <Container maxWidth="lg">
-      {" "}
-      <Box
-        sx={{
-          textAlign: "center",
-          paddingY: 8,
-          background: "linear-gradient(70deg, #2196F3 30%, #21CBF3 90%)",
-          color: "common.white",
-          marginBottom: 4,
+      <Container
+        style={{
+          backgroundImage: "url(./src/assets/icons/tree.jpg)",
+          backgroundSize: "cover",
+          borderRadius: "8px",
+          marginTop: "20px",
         }}
       >
-        <Typography
-          variant="h2"
-          component="h1"
-          gutterBottom
-          sx={{ fontWeight: "bold" }}
+        <Box
+          sx={{
+            textAlign: "center",
+            paddingY: 8,
+            color: "mintcream",
+            marginBottom: 4,
+          }}
         >
-          JourneyJoy
-        </Typography>
-        <Typography variant="h5" sx={{ mb: 4 }}>
-          영화, 드라마, 애니메이션 속 인물들이 다녀간 장소를 찾아보세요.
-        </Typography>
-        <SearchBar
-          search={search}
-          setSearch={setSearch}
-          handleSearchSubmit={handleSearchSubmit}
-        />
-      </Box>
+          <img
+            src="./src/assets/icons/journeyjoy.ico"
+            alt="JourneyJoy"
+            style={{
+              display: "block",
+              marginLeft: "auto",
+              marginRight: "auto",
+              width: "150px",
+              height: "150px",
+            }}
+          />
+          <Typography
+            variant="h2"
+            component="h1"
+            gutterBottom
+            sx={{ fontWeight: "bold" }}
+          >
+            JourneyJoy
+          </Typography>
+          <Typography variant="h5" sx={{ mb: 10 }}>
+            영화, 드라마, 애니메이션 속 인물들이 다녀간 장소를 찾아보세요.
+          </Typography>
+          <SearchBar
+            search={search}
+            setSearch={setSearch}
+            handleSearchSubmit={handleSearchSubmit}
+          />
+        </Box>
+      </Container>
       <LocationGrid locations={locations} />
       <AddLocationButton />
     </Container>
