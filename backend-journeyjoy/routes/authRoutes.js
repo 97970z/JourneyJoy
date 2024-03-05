@@ -28,12 +28,21 @@ router.post("/login", async (req, res) => {
   try {
     const user = await User.findOne({ username: req.body.username });
     if (user && (await compare(req.body.password, user.password))) {
-      const token = jwt.sign(
+      const accessToken = jwt.sign(
         { userId: user._id },
         process.env.JWT_SECRET, // 환경변수에서 JWT 비밀키를 가져옵니다.
         { expiresIn: "1h" } // 토큰의 유효 기간을 1시간으로 설정
       );
-      res.status(200).json(token);
+      const refreshToken = jwt.sign(
+        { userId: user._id },
+        process.env.REFRESH_TOKEN_SECRET,
+        { expiresIn: "7d" }
+      );
+
+      user.refreshToken = refreshToken;
+      await user.save();
+
+      res.status(200).json({ accessToken, refreshToken });
     } else {
       res.status(400).json({ message: "Invalid credentials." });
     }
@@ -54,6 +63,33 @@ router.post("/verify", (req, res) => {
     res.json(true);
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+});
+
+// Refresh Token을 사용하여 새로운 Access Token 발급
+router.post("/refresh", async (req, res) => {
+  const { refreshToken } = req.body;
+  console.log("refreshToken:", refreshToken);
+  if (!refreshToken)
+    return res.status(401).json({ message: "Refresh Token is required" });
+
+  try {
+    const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+    const user = await User.findById(decoded.userId);
+    console.log("user:", user);
+    if (user.refreshToken !== refreshToken) {
+      return res.status(403).json({ message: "Refresh Token is not valid" });
+    }
+
+    const newAccessToken = jwt.sign(
+      { userId: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+    console.log("newAccessToken:", newAccessToken);
+    res.json({ accessToken: newAccessToken });
+  } catch (error) {
+    res.status(403).json({ message: "Invalid Refresh Token" });
   }
 });
 
