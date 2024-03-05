@@ -23,7 +23,21 @@ function Navbar() {
       }}
     >
       <Toolbar>
-        <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: "bold" }}>
+        <img
+          src="./src/assets/icons/journeyjoy.ico"
+          alt="JourneyJoy"
+          style={{
+            display: "block",
+            marginLeft: "auto",
+            marginRight: "auto",
+            width: "50px",
+            height: "50px",
+          }}
+        />
+        <Typography
+          variant="h6"
+          sx={{ flexGrow: 1, fontWeight: "bold", marginLeft: "10px" }}
+        >
           <Link to="/" style={{ color: "inherit", textDecoration: "none" }}>
             JourneyJoy
           </Link>

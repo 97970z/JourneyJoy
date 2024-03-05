@@ -1,18 +1,59 @@
 // frontend/src/components/HomeComponents/LocationGrid.jsx
 import React from "react";
-import { Grid } from "@mui/material";
+import Slider from "react-slick";
 import LocationCard from "./LocationCard";
 
+const settings = {
+  dots: true,
+  infinite: true,
+  speed: 500,
+  slidesToShow: 3,
+  slidesToScroll: 3,
+  responsive: [
+    {
+      breakpoint: 1024,
+      settings: {
+        slidesToShow: 3,
+        slidesToScroll: 3,
+        infinite: true,
+        dots: true,
+      },
+    },
+    {
+      breakpoint: 600,
+      settings: {
+        slidesToShow: 2,
+        slidesToScroll: 2,
+        initialSlide: 2,
+      },
+    },
+    {
+      breakpoint: 480,
+      settings: {
+        slidesToShow: 1,
+        slidesToScroll: 1,
+      },
+    },
+  ],
+};
+
 const LocationGrid = ({ locations }) => {
-  return (
-    <Grid container spacing={2} justifyContent="center">
-      {" "}
+  return locations.length > 6 ? (
+    <Slider {...settings}>
       {locations.map((location, index) => (
-        <Grid item xs={12} sm={6} md={4} key={index}>
+        <div key={index}>
           <LocationCard {...location} />
-        </Grid>
+        </div>
       ))}
-    </Grid>
+    </Slider>
+  ) : (
+    <div
+      style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}
+    >
+      {locations.map((location, index) => (
+        <LocationCard key={index} {...location} />
+      ))}
+    </div>
   );
 };
 

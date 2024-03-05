@@ -1,13 +1,39 @@
 // frontend/src/pages/Home.jsx
-import React, { useState } from "react";
-import { Box, Typography, Container } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { Box, Typography, Container, Button } from "@mui/material";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import { useAuth } from "../contextAPI/AuthContext";
+import api from "../baseAPI/Api";
 import SearchBar from "../components/HomeComponents/SearchBar";
 import LocationGrid from "../components/HomeComponents/LocationGrid";
-import AddLocationButton from "../components/HomeComponents/AddLocationButton";
+import AddLocationModal from "../components/HomeComponents/AddLocationModal";
 
 function Home() {
+  const { currentUser } = useAuth();
   const [search, setSearch] = useState("");
-  const [locations, setLocations] = useState([...Array(6)]);
+  const [locations, setLocations] = useState([]);
+  const [modalOpen, setModalOpen] = useState(false);
+
+  useEffect(() => {
+    fetchLocations();
+  }, []);
+
+  const fetchLocations = async () => {
+    try {
+      const { data } = await api.get("/places");
+      setLocations(data);
+    } catch (error) {
+      console.error("Failed to fetch places:", error);
+    }
+  };
+
+  const handleModalOpen = () => {
+    setModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setModalOpen(false);
+  };
 
   const handleSearchSubmit = () => {
     console.log("Searching for:", search);
@@ -21,6 +47,7 @@ function Home() {
           backgroundSize: "cover",
           borderRadius: "8px",
           marginTop: "20px",
+          paddingBottom: "500px",
         }}
       >
         <Box
@@ -31,28 +58,6 @@ function Home() {
             marginBottom: 4,
           }}
         >
-          <img
-            src="./src/assets/icons/journeyjoy.ico"
-            alt="JourneyJoy"
-            style={{
-              display: "block",
-              marginLeft: "auto",
-              marginRight: "auto",
-              width: "150px",
-              height: "150px",
-            }}
-          />
-          <Typography
-            variant="h2"
-            component="h1"
-            gutterBottom
-            sx={{ fontWeight: "bold" }}
-          >
-            JourneyJoy
-          </Typography>
-          <Typography variant="h5" sx={{ mb: 10 }}>
-            영화, 드라마, 애니메이션 속 인물들이 다녀간 장소를 찾아보세요.
-          </Typography>
           <SearchBar
             search={search}
             setSearch={setSearch}
@@ -61,7 +66,22 @@ function Home() {
         </Box>
       </Container>
       <LocationGrid locations={locations} />
-      <AddLocationButton />
+      <Box textAlign="center" my={4}>
+        <Button
+          variant="outlined"
+          startIcon={<AddCircleOutlineIcon />}
+          sx={{ borderColor: "primary.main", color: "primary.main" }}
+          onClick={handleModalOpen}
+        >
+          Add New Location
+        </Button>
+      </Box>
+      <AddLocationModal
+        open={modalOpen}
+        handleClose={handleModalClose}
+        refreshLocations={fetchLocations}
+        username={currentUser?.username}
+      />
     </Container>
   );
 }
