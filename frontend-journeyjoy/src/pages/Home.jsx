@@ -1,9 +1,9 @@
 // frontend/src/components/Home.jsx
 import React, { useState } from "react";
 import { Box, Typography, Container } from "@mui/material";
-import SearchBar from "../components/homeComponents/SearchBar";
-import LocationGrid from "../components/homeComponents/LocationGrid";
-import AddLocationButton from "../components/homeComponents/AddLocationButton";
+import SearchBar from "../components/HomeComponents/SearchBar";
+import LocationGrid from "../components/HomeComponents/LocationGrid";
+import AddLocationButton from "../components/HomeComponents/AddLocationButton";
 
 function Home() {
   const [search, setSearch] = useState("");

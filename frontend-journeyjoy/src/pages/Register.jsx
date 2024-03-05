@@ -1,7 +1,7 @@
 // frontend/src/components/Register.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../baseAPI/api";
+import api from "../baseAPI/Api.jsx";
 import { useAuth } from "../contextAPI/AuthContext.jsx";
 import {
   Container,
