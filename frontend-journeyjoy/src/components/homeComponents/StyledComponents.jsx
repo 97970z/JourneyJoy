@@ -11,7 +11,8 @@ export const StyledCard = styled(Card)({
 });
 
 export const StyledCardMedia = styled(CardMedia)({
-  height: 200,
+  height: 300,
+  width: "100%",
   objectFit: "cover",
 });
 

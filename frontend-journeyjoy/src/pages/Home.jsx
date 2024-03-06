@@ -1,6 +1,6 @@
 // frontend/src/pages/Home.jsx
 import React, { useState, useEffect } from "react";
-import { Box, Typography, Container, Button } from "@mui/material";
+import { Box, Container, Button, Typography } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { useAuth } from "../contextAPI/AuthContext";
 import api from "../baseAPI/Api";
@@ -23,7 +23,7 @@ function Home() {
       const { data } = await api.get("/places");
       setLocations(data);
     } catch (error) {
-      console.error("Failed to fetch places:", error);
+      console.error("장소 불러오기 실패 :", error);
     }
   };
 
@@ -36,46 +36,59 @@ function Home() {
   };
 
   const handleSearchSubmit = () => {
-    console.log("Searching for:", search);
+    console.log("검색:", search);
   };
 
   return (
-    <Container maxWidth="lg">
-      <Container
-        style={{
+    <Container maxWidth="xl">
+      <Box
+        sx={{
+          position: "relative",
           backgroundImage: "url(./src/assets/icons/tree.jpg)",
           backgroundSize: "cover",
           borderRadius: "8px",
-          marginTop: "20px",
-          paddingBottom: "500px",
+          color: "white",
+          textAlign: "center",
+          py: 30,
+          mb: 4,
+          mt: 4,
         }}
       >
-        <Box
-          sx={{
-            textAlign: "center",
-            paddingY: 8,
-            color: "mintcream",
-            marginBottom: 4,
-          }}
+        <Typography
+          variant="h2"
+          component="h1"
+          gutterBottom
+          sx={{ fontWeight: "bold" }}
         >
-          <SearchBar
-            search={search}
-            setSearch={setSearch}
-            handleSearchSubmit={handleSearchSubmit}
-          />
-        </Box>
-      </Container>
-      <LocationGrid locations={locations} />
-      <Box textAlign="center" my={4}>
+          JourneyJoy와 함께하는 여행
+        </Typography>
+        <Typography variant="h5" sx={{ mb: 4 }}>
+          미디어에 소개된 세계의 장소를 찾아보세요.
+        </Typography>
+        <SearchBar
+          search={search}
+          setSearch={setSearch}
+          handleSearchSubmit={handleSearchSubmit}
+        />
         <Button
-          variant="outlined"
+          variant="contained"
+          color="secondary"
           startIcon={<AddCircleOutlineIcon />}
-          sx={{ borderColor: "primary.main", color: "primary.main" }}
+          sx={{
+            position: "absolute",
+            boxShadow: 0,
+            bottom: 0,
+            left: "50%",
+            transform: "translateX(-50%)",
+            py: 2,
+            px: 5,
+          }}
           onClick={handleModalOpen}
         >
           Add New Location
         </Button>
       </Box>
+      <LocationGrid locations={locations} />
       <AddLocationModal
         open={modalOpen}
         handleClose={handleModalClose}

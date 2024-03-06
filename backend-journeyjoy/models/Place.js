@@ -8,6 +8,7 @@ const placeSchema = new mongoose.Schema(
     description: { type: String },
     imageUrl: { type: String },
     featuredIn: [{ type: String }],
+    genre: [{ type: String }],
     addedBy: { type: String, ref: "User" },
   },
   { timestamps: true }

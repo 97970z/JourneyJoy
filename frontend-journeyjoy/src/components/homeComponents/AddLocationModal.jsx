@@ -7,8 +7,14 @@ import {
   TextField,
   DialogActions,
   Button,
+  FormControl,
+  Select,
+  MenuItem,
+  Alert,
 } from "@mui/material";
 import api from "../../baseAPI/Api";
+
+const MAX_FILE_SIZE = 1.5 * 1024 * 1024;
 
 const AddLocationModal = ({
   open,
@@ -20,27 +26,50 @@ const AddLocationModal = ({
     name: "",
     location: "",
     description: "",
-    imageUrl: "",
     featuredIn: "",
+    genre: "",
   });
+  const [fileError, setFileError] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file && file.size > MAX_FILE_SIZE) {
+      setFileError("이미지 용량은 1.5MB를 넘을 수 없습니다.");
+      e.target.value = null;
+    } else {
+      setFormData({ ...formData, image: file });
+      setFileError("");
+    }
+  };
+
   const handleSubmit = async () => {
-    const locationData = { ...formData, addedBy: username };
+    if (formData.image && formData.image.size > MAX_FILE_SIZE) {
+      setFileError("이미지 용량은 1.5MB를 넘을 수 없습니다.");
+      return;
+    }
+
+    const locationData = new FormData();
+
+    Object.keys(formData).forEach((key) => {
+      locationData.append(key, formData[key]);
+    });
+    locationData.append("addedBy", username);
     try {
       await api.post("/places/add", locationData);
       handleClose();
-      refreshLocations(); // 장소 추가 후 목록을 새로고침
+      refreshLocations();
       setFormData({
         name: "",
         location: "",
         description: "",
-        imageUrl: "",
         featuredIn: "",
+        genre: "",
       });
+      setFileError("");
     } catch (error) {
       console.error("Failed to add location", error);
     }
@@ -50,6 +79,7 @@ const AddLocationModal = ({
     <Dialog open={open} onClose={handleClose}>
       <DialogTitle>Add a New Location</DialogTitle>
       <DialogContent>
+        {fileError && <Alert severity="error">{fileError}</Alert>}
         <TextField
           autoFocus
           margin="dense"
@@ -59,6 +89,7 @@ const AddLocationModal = ({
           variant="outlined"
           value={formData.name}
           onChange={handleChange}
+          required
         />
         <TextField
           margin="dense"
@@ -68,6 +99,7 @@ const AddLocationModal = ({
           variant="outlined"
           value={formData.location}
           onChange={handleChange}
+          required
         />
         <TextField
           margin="dense"
@@ -79,15 +111,7 @@ const AddLocationModal = ({
           rows={4}
           value={formData.description}
           onChange={handleChange}
-        />
-        <TextField
-          margin="dense"
-          name="imageUrl"
-          label="Image URL"
-          fullWidth
-          variant="outlined"
-          value={formData.imageUrl}
-          onChange={handleChange}
+          required
         />
         <TextField
           margin="dense"
@@ -97,6 +121,27 @@ const AddLocationModal = ({
           variant="outlined"
           value={formData.featuredIn}
           onChange={handleChange}
+          required
+        />
+        <FormControl style={{ width: "30%", marginTop: "10px" }}>
+          <Select
+            labelId="genre-label"
+            id="genre"
+            name="genre"
+            value={formData.genre}
+            onChange={handleChange}
+          >
+            <MenuItem value={"Movie"}>Movie</MenuItem>
+            <MenuItem value={"Drama"}>Drama</MenuItem>
+            <MenuItem value={"Anime"}>Anime</MenuItem>
+            <MenuItem value={"TV Show"}>TV Show</MenuItem>
+          </Select>
+        </FormControl>
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          style={{ marginTop: "10px" }}
         />
       </DialogContent>
       <DialogActions>
