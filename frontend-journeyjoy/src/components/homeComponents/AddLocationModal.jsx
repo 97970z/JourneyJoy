@@ -28,6 +28,7 @@ const AddLocationModal = ({
     description: "",
     featuredIn: "",
     genre: "",
+    image: null,
   });
   const [fileError, setFileError] = useState(false);
 
@@ -72,6 +73,13 @@ const AddLocationModal = ({
       setFileError("");
     } catch (error) {
       console.error("Failed to add location", error);
+      setFormData({
+        name: "",
+        location: "",
+        description: "",
+        featuredIn: "",
+        genre: "",
+      });
     }
   };
 

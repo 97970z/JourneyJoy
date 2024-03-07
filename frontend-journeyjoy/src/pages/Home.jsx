@@ -49,7 +49,7 @@ function Home() {
           borderRadius: "8px",
           color: "white",
           textAlign: "center",
-          py: 30,
+          py: 15,
           mb: 4,
           mt: 4,
         }}
@@ -63,7 +63,7 @@ function Home() {
           JourneyJoy와 함께하는 여행
         </Typography>
         <Typography variant="h5" sx={{ mb: 4 }}>
-          미디어에 소개된 세계의 장소를 찾아보세요.
+          미디어에 나온 장소를 전세계에서 찾아보세요.
         </Typography>
         <SearchBar
           search={search}
@@ -72,16 +72,23 @@ function Home() {
         />
         <Button
           variant="contained"
-          color="secondary"
           startIcon={<AddCircleOutlineIcon />}
           sx={{
             position: "absolute",
+            backgroundColor: "burlywood",
+            fontWeight: "bold",
             boxShadow: 0,
             bottom: 0,
+            opacity: 0.9,
             left: "50%",
             transform: "translateX(-50%)",
             py: 2,
             px: 5,
+
+            "&:hover": {
+              backgroundColor: "darkkhaki",
+              boxShadow: 0,
+            },
           }}
           onClick={handleModalOpen}
         >

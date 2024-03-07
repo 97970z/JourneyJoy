@@ -8,17 +8,12 @@ const router = Router();
 // 장소 추가
 router.post("/add", parser.single("image"), async (req, res) => {
   const { name, location, description, featuredIn, genre, addedBy } = req.body;
-  if (req.file.size > MAX_FILE_SIZE) {
-    return res
-      .status(400)
-      .json({ message: "이미지 용량은 1.5MB를 넘을 수 없습니다." });
-  }
   try {
     const newPlace = new Place({
       name,
       location,
       description,
-      imageUrl: req.file.path, // 이미지 URL을 클라우드에 저장된 URL로 설정
+      imageUrl: req.file.path,
       featuredIn,
       genre,
       addedBy,
