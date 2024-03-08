@@ -25,6 +25,25 @@ router.post("/add", parser.single("image"), async (req, res) => {
   }
 });
 
+// 장소 검색
+router.get("/search", async (req, res) => {
+  const { q } = req.query;
+  try {
+    const regex = new RegExp(q, "i");
+    const places = await Place.find({
+      $or: [
+        { name: regex },
+        { location: regex },
+        { description: regex },
+        { featuredIn: regex },
+      ],
+    });
+    res.status(200).json(places);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // 모든 장소 가져오기
 router.get("/", async (req, res) => {
   try {
