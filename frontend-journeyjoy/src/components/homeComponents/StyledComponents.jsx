@@ -16,19 +16,19 @@ export const StyledCard = styled(Card)({
 });
 
 export const StyledCardMedia = styled(CardMedia)({
-  height: "100%",
-  width: "100%",
+  position: "relative",
+  height: 300,
   objectFit: "cover",
 });
 
-export const OverlayText = styled(Box)({
+export const OverlayText = styled(Box)(({ theme }) => ({
   position: "absolute",
   bottom: 0,
   left: 0,
-  padding: "16px",
+  padding: theme.spacing(2),
   color: "white",
   fontWeight: "bold",
-  background: "linear-gradient(to top, rgba(0,0,0,0.5), transparent)",
+  background: "linear-gradient(to top, rgba(0,0,0,0.7), transparent)",
   width: "100%",
   boxSizing: "border-box",
   transition: "opacity 0.5s",
@@ -36,7 +36,7 @@ export const OverlayText = styled(Box)({
   "&:hover": {
     opacity: 1,
   },
-});
+}));
 
 export const StyledTextField = styled(TextField)({
   backgroundColor: "rgba(255, 255, 255, 0.8)",

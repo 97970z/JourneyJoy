@@ -1,6 +1,6 @@
 // frontend/src/pages/Home.jsx
 import React, { useState, useEffect } from "react";
-import { Box, Container, Button, Typography } from "@mui/material";
+import { Box, Container, Button, Typography, useTheme } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { useAuth } from "../contextAPI/AuthContext";
 import api from "../baseAPI/Api";
@@ -9,6 +9,7 @@ import LocationGrid from "../components/HomeComponents/LocationGrid";
 import AddLocationModal from "../components/HomeComponents/AddLocationModal";
 
 function Home() {
+  const theme = useTheme();
   const { currentUser } = useAuth();
   const [search, setSearch] = useState("");
   const [locations, setLocations] = useState([]);
@@ -43,59 +44,54 @@ function Home() {
     <Container maxWidth="xl">
       <Box
         sx={{
-          position: "relative",
           backgroundImage: "url(./src/assets/icons/tree.jpg)",
           backgroundSize: "cover",
-          borderRadius: "8px",
-          color: "white",
+          color: theme.palette.common.white,
           textAlign: "center",
-          py: 15,
-          mb: 4,
-          mt: 4,
+          py: theme.spacing(10),
+          mb: theme.spacing(4),
+          position: "relative",
+          "&:before": {
+            content: '""',
+            position: "absolute",
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+            backgroundColor: "rgba(0,0,0,0.3)",
+          },
         }}
       >
         <Typography
           variant="h2"
           component="h1"
           gutterBottom
-          sx={{ fontWeight: "bold" }}
+          sx={{ position: "relative", fontWeight: "bold" }}
         >
-          JourneyJoy와 함께하는 여행
+          JourneyJoy
         </Typography>
-        <Typography variant="h5" sx={{ mb: 4 }}>
-          미디어에 나온 장소를 전세계에서 찾아보세요.
+        <Typography variant="h5" sx={{ mb: 4, position: "relative" }}>
+          지금 바로 JourneyJoy와 함께 여행을 떠나보세요!
         </Typography>
-        <SearchBar
-          search={search}
-          setSearch={setSearch}
-          handleSearchSubmit={handleSearchSubmit}
-        />
+        <Box sx={{ position: "relative", zIndex: 1 }}>
+          <SearchBar
+            search={search}
+            setSearch={setSearch}
+            handleSearchSubmit={handleSearchSubmit}
+          />
+        </Box>
+      </Box>
+      <LocationGrid locations={locations} />
+      <Box textAlign="center" my={4}>
         <Button
           variant="contained"
           startIcon={<AddCircleOutlineIcon />}
-          sx={{
-            position: "absolute",
-            backgroundColor: "burlywood",
-            fontWeight: "bold",
-            boxShadow: 0,
-            bottom: 0,
-            opacity: 0.9,
-            left: "50%",
-            transform: "translateX(-50%)",
-            py: 2,
-            px: 5,
-
-            "&:hover": {
-              backgroundColor: "darkkhaki",
-              boxShadow: 0,
-            },
-          }}
+          sx={{ backgroundColor: theme.palette.primary.main }}
           onClick={handleModalOpen}
         >
           Add New Location
         </Button>
       </Box>
-      <LocationGrid locations={locations} />
       <AddLocationModal
         open={modalOpen}
         handleClose={handleModalClose}
