@@ -1,16 +1,22 @@
 // frontend/src/components/HomeComponents/LocationCard.jsx
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { Typography, CardActionArea } from "@mui/material";
 import { StyledCard, StyledCardMedia, OverlayText } from "./StyledComponents";
 
-const LocationCard = ({ imageUrl, name, featuredIn }) => {
+const LocationCard = ({ _id, imageUrl, name, featuredIn }) => {
+  const navigate = useNavigate();
+
   const transformedImageUrl = imageUrl.replace(
     "/upload/",
-    "/upload/c_fill,h_300,w_400/" // Change '300' and '400' to the desired height and width
+    "/upload/c_fill,h_300,w_400/"
   );
+  const goToDetailPage = (id) => () => {
+    navigate(`/locations/${id}`);
+  };
 
   return (
-    <StyledCard>
+    <StyledCard onClick={goToDetailPage(_id)}>
       <CardActionArea>
         <StyledCardMedia
           image={transformedImageUrl}

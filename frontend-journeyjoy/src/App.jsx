@@ -5,6 +5,7 @@ import { AuthProvider } from "./contextAPI/AuthContext";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
+import LocationDetail from "./pages/LocationDetail";
 import Navbar from "./components/Navbar/Navbar";
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/locations/:id" element={<LocationDetail />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
