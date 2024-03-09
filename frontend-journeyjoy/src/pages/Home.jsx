@@ -1,6 +1,6 @@
 // frontend/src/pages/Home.jsx
 import React, { useState, useEffect } from "react";
-import { Box, Container, Button, Typography, useTheme } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { useAuth } from "../contextAPI/AuthContext";
 import api from "../baseAPI/Api";
@@ -8,9 +8,13 @@ import SearchBar from "../components/HomeComponents/SearchBar";
 import LocationGrid from "../components/HomeComponents/LocationGrid";
 import AddLocationModal from "../components/HomeComponents/AddLocationModal";
 import SearchFilters from "../components/HomeComponents/SearchFilters";
+import {
+  StyledContainer,
+  StyledHeroBox,
+  StyledActionButton,
+} from "./styles/homeStyles";
 
 function Home() {
-  const theme = useTheme();
   const { currentUser } = useAuth();
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -78,27 +82,8 @@ function Home() {
   };
 
   return (
-    <Container maxWidth="xl">
-      <Box
-        sx={{
-          backgroundImage: "url(./src/assets/icons/tree.jpg)",
-          backgroundSize: "cover",
-          color: theme.palette.common.white,
-          textAlign: "center",
-          py: theme.spacing(10),
-          mb: theme.spacing(4),
-          position: "relative",
-          "&:before": {
-            content: '""',
-            position: "absolute",
-            top: 0,
-            right: 0,
-            bottom: 0,
-            left: 0,
-            backgroundColor: "rgba(0,0,0,0.3)",
-          },
-        }}
-      >
+    <StyledContainer>
+      <StyledHeroBox>
         <Typography
           variant="h2"
           component="h1"
@@ -117,7 +102,7 @@ function Home() {
             handleSearchSubmit={handleSearchSubmit}
           />
         </Box>
-      </Box>
+      </StyledHeroBox>
       <SearchFilters
         selectedGenres={selectedGenres}
         setSelectedGenres={setSelectedGenres}
@@ -125,14 +110,13 @@ function Home() {
       />
       <LocationGrid locations={filteredLocations} />
       <Box textAlign="center" my={4}>
-        <Button
+        <StyledActionButton
           variant="contained"
           startIcon={<AddCircleOutlineIcon />}
-          sx={{ backgroundColor: theme.palette.primary.main }}
           onClick={handleModalOpen}
         >
           Add New Location
-        </Button>
+        </StyledActionButton>
       </Box>
       <AddLocationModal
         open={modalOpen}
@@ -140,7 +124,7 @@ function Home() {
         refreshLocations={fetchLocations}
         username={currentUser?.username}
       />
-    </Container>
+    </StyledContainer>
   );
 }
 
