@@ -72,7 +72,7 @@ router.put(
         return res.status(404).json({ message: "Place not found" });
       }
 
-      if (place.addedBy.toString() !== req.user.id.toString()) {
+      if (place.addedBy !== req.user.username) {
         return res
           .status(403)
           .json({ message: "Not authorized to update this place" });
