@@ -1,6 +1,6 @@
 // frontend/src/pages/LocationDetail.jsx
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { Button, Container, Typography, CircularProgress } from "@mui/material";
 import api from "../baseAPI/Api";
 import { useAuth } from "../contextAPI/AuthContext";
@@ -14,16 +14,20 @@ const LocationDetail = () => {
 
   useEffect(() => {
     const fetchLocation = async () => {
-      const { data } = await api.get(`/places/${id}`);
-      setLocation(data);
+      const response = await api.get(`/places/${id}`);
+      setLocation(response.data);
       setIsLoading(false);
     };
     fetchLocation();
   }, [id]);
 
   const handleDelete = async () => {
-    await api.delete(`/places/${id}`);
-    navigate("/");
+    try {
+      await api.delete(`/places/${id}`);
+      navigate("/");
+    } catch (error) {
+      console.error("Error deleting location:", error);
+    }
   };
 
   if (isLoading) return <CircularProgress />;
@@ -32,10 +36,21 @@ const LocationDetail = () => {
 
   return (
     <Container>
-      <Typography variant="h4">{location?.name}</Typography>
-      {location && currentUser?.username === location.addedBy && (
+      <Typography variant="h4">{location.name}</Typography>
+      <img
+        src={location.imageUrl}
+        alt={location.name}
+        style={{ width: "100%", height: "auto", margin: "20px 0" }}
+      />
+      <Typography variant="body1">{location.description}</Typography>
+      {currentUser?.username === location.addedBy && (
         <div>
-          <Button variant="outlined" onClick={() => navigate(`/edit/${id}`)}>
+          <Button
+            component={Link}
+            to={`/edit/${id}`}
+            variant="outlined"
+            style={{ marginRight: "10px" }}
+          >
             Edit
           </Button>
           <Button variant="outlined" color="error" onClick={handleDelete}>
