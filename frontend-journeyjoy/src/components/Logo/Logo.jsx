@@ -6,7 +6,7 @@ const Logo = () => {
     <>
       <Container>
         <img
-          src="../../src/assets/icons/journeyjoy.ico"
+          src="https://res.cloudinary.com/dl6f9clxo/image/upload/v1710141573/journeyjoy/f4wnhnul085ofcadmgjt.ico"
           alt="JourneyJoy"
           style={{
             display: "block",
