@@ -2,28 +2,26 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { Button, Container, Typography, CircularProgress } from "@mui/material";
-import api from "../baseAPI/Api";
 import { useAuth } from "../contextAPI/AuthContext";
+import { usePlaces } from "../contextAPI/PlacesContext";
 
 const LocationDetail = () => {
   const { id } = useParams();
   const { currentUser } = useAuth();
+  const { deletePlace, places } = usePlaces();
   const [location, setLocation] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchLocation = async () => {
-      const response = await api.get(`/places/${id}`);
-      setLocation(response.data);
-      setIsLoading(false);
-    };
-    fetchLocation();
-  }, [id]);
+    const foundLocation = places.find((place) => place._id === id);
+    setLocation(foundLocation);
+    setIsLoading(false);
+  }, [id, places]);
 
   const handleDelete = async () => {
     try {
-      await api.delete(`/places/${id}`);
+      await deletePlace(id);
       navigate("/");
     } catch (error) {
       console.error("Error deleting location:", error);

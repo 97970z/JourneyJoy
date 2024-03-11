@@ -1,30 +1,45 @@
 // frontend/src/components/Navbar/Navbar.jsx
-import React from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contextAPI/AuthContext";
-import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
+  Box,
+  IconButton,
+} from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import AddLocationModal from "../HomeComponents/AddLocationModal";
 
 function Navbar() {
   const navigate = useNavigate();
   const { currentUser, logout } = useAuth();
+  const [modalOpen, setModalOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
     navigate("/");
   };
 
+  const handleModalOpen = () => {
+    setModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setModalOpen(false);
+  };
+
   return (
     <AppBar
       position="static"
-      sx={{
-        color: "common.snow",
-        backgroundColor: "darkkhaki",
-      }}
+      sx={{ color: "common.white", backgroundColor: "darkkhaki" }}
     >
       <Toolbar>
         <img
-          src="./src/assets/icons/journeyjoy.ico"
+          src="https://res.cloudinary.com/dl6f9clxo/image/upload/v1710141573/journeyjoy/f4wnhnul085ofcadmgjt.ico"
           alt="JourneyJoy"
           style={{
             display: "block",
@@ -60,6 +75,9 @@ function Navbar() {
             <Typography variant="body1" sx={{ marginRight: 2 }}>
               {currentUser.username}
             </Typography>
+            <IconButton color="inherit" onClick={handleModalOpen}>
+              <AddCircleOutlineIcon />
+            </IconButton>
             <Button
               startIcon={<LogoutIcon />}
               onClick={handleLogout}
@@ -70,6 +88,11 @@ function Navbar() {
           </Box>
         )}
       </Toolbar>
+      <AddLocationModal
+        open={modalOpen}
+        handleClose={handleModalClose}
+        username={currentUser?.username}
+      />
     </AppBar>
   );
 }

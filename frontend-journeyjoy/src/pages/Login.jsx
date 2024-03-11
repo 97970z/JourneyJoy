@@ -1,7 +1,6 @@
 // frontend/src/pages/Login.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../baseAPI/Api.jsx";
 import { useAuth } from "../contextAPI/AuthContext.jsx";
 import Logo from "../components/Logo/Logo.jsx";
 import {
@@ -28,18 +27,11 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await api.post("/auth/login", {
-        username,
-        password,
-      });
-      handleLogin(res.data);
+      await login(username, password);
+      navigate("/");
     } catch (error) {
       console.error(error.response.data);
     }
-  };
-
-  const handleLogin = (token) => {
-    login(token);
   };
 
   return (

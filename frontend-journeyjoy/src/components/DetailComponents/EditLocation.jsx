@@ -2,11 +2,12 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { TextField, Button, Typography } from "@mui/material";
-import api from "../../baseAPI/Api";
+import { usePlaces } from "../../contextAPI/PlacesContext";
 
 const EditLocation = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { updatePlace, places } = usePlaces();
   const [formData, setFormData] = useState({
     name: "",
     location: "",
@@ -15,22 +16,15 @@ const EditLocation = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const fetchLocation = async () => {
-      setIsLoading(true);
-      try {
-        const response = await api.get(`/places/${id}`);
-        const { name, location, description } = response.data;
-        setFormData({ name, location, description });
-      } catch (error) {
-        console.error("Failed to fetch location details:", error);
-        navigate("/");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchLocation();
-  }, [id, navigate]);
+    const placeToEdit = places.find((place) => place._id === id);
+    if (placeToEdit) {
+      setFormData({
+        name: placeToEdit.name,
+        location: placeToEdit.location,
+        description: placeToEdit.description,
+      });
+    }
+  }, [id, places]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -39,15 +33,9 @@ const EditLocation = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    try {
-      console.log("Form data:", formData);
-      await api.put(`/places/${id}`, formData);
-      navigate(`/locations/${id}`);
-    } catch (error) {
-      console.error("Failed to update location:", error);
-    } finally {
-      setIsLoading(false);
-    }
+    await updatePlace(id, formData);
+    navigate(`/locations/${id}`);
+    setIsLoading(false);
   };
 
   return (

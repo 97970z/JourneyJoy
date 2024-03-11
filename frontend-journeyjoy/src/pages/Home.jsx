@@ -1,85 +1,58 @@
 // frontend/src/pages/Home.jsx
 import React, { useState, useEffect } from "react";
 import { Box, Typography } from "@mui/material";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import { useAuth } from "../contextAPI/AuthContext";
-import api from "../baseAPI/Api";
+import { usePlaces } from "../contextAPI/PlacesContext";
 import SearchBar from "../components/HomeComponents/SearchBar";
 import LocationGrid from "../components/HomeComponents/LocationGrid";
-import AddLocationModal from "../components/HomeComponents/AddLocationModal";
 import SearchFilters from "../components/HomeComponents/SearchFilters";
-import {
-  StyledContainer,
-  StyledHeroBox,
-  StyledActionButton,
-} from "./styles/homeStyles";
+import { StyledContainer, StyledHeroBox } from "./styles/homeStyles";
 
 function Home() {
-  const { currentUser } = useAuth();
-  const [modalOpen, setModalOpen] = useState(false);
-
+  const { places, isLoading } = usePlaces();
   const [search, setSearch] = useState("");
-  const [locations, setLocations] = useState([]);
   const [filteredLocations, setFilteredLocations] = useState([]);
   const [selectedGenres, setSelectedGenres] = useState([]);
-  const [allGenres, setAllGenres] = useState([]);
-
-  useEffect(() => {
-    fetchLocations();
-    fetchGenres();
-  }, []);
+  const [allGenres, setAllGenres] = useState([
+    "Movie",
+    "Drama",
+    "Anime",
+    "TV Show",
+  ]);
 
   useEffect(() => {
     filterLocations();
-  }, [locations, selectedGenres]);
-
-  const fetchLocations = async () => {
-    try {
-      const { data } = await api.get("/places");
-      setLocations(data);
-      setFilteredLocations(data);
-    } catch (error) {
-      console.error("장소 불러오기 실패 :", error);
-    }
-  };
-
-  const fetchGenres = async () => {
-    setAllGenres(["Movie", "Drama", "Anime", "TV Show"]);
-  };
+  }, [places, selectedGenres]);
 
   const filterLocations = () => {
     if (selectedGenres.length === 0) {
-      setFilteredLocations(locations);
+      setFilteredLocations(places);
     } else {
-      const filtered = locations.filter((location) =>
+      const filtered = places.filter((location) =>
         selectedGenres.some((genre) => location.genre.includes(genre))
       );
       setFilteredLocations(filtered);
     }
   };
 
-  const handleModalOpen = () => {
-    setModalOpen(true);
-  };
-
-  const handleModalClose = () => {
-    setModalOpen(false);
-  };
-
   const handleSearchSubmit = async () => {
     if (!search) {
-      await fetchLocations(); // 검색어가 없으면 모든 장소를 다시 불러옴
+      setFilteredLocations(places);
       return;
     }
-    try {
-      const { data } = await api.get(
-        `/places/search?q=${encodeURIComponent(search)}`
-      );
-      setLocations(data); // 검색 결과로 상태를 업데이트
-    } catch (error) {
-      console.error("검색 실패 :", error);
-    }
+
+    const filtered = places.filter(
+      (location) =>
+        location.name.toLowerCase().includes(search.toLowerCase()) ||
+        location.description.toLowerCase().includes(search.toLowerCase()) ||
+        location.location.toLowerCase().includes(search.toLowerCase()) ||
+        location.featuredIn.some((feature) =>
+          feature.toLowerCase().includes(search.toLowerCase())
+        )
+    );
+    setFilteredLocations(filtered);
   };
+
+  if (isLoading) return <Typography>Loading...</Typography>;
 
   return (
     <StyledContainer>
@@ -109,21 +82,6 @@ function Home() {
         allGenres={allGenres}
       />
       <LocationGrid locations={filteredLocations} />
-      <Box textAlign="center" my={4}>
-        <StyledActionButton
-          variant="contained"
-          startIcon={<AddCircleOutlineIcon />}
-          onClick={handleModalOpen}
-        >
-          Add New Location
-        </StyledActionButton>
-      </Box>
-      <AddLocationModal
-        open={modalOpen}
-        handleClose={handleModalClose}
-        refreshLocations={fetchLocations}
-        username={currentUser?.username}
-      />
     </StyledContainer>
   );
 }

@@ -12,16 +12,12 @@ import {
   MenuItem,
   Alert,
 } from "@mui/material";
-import api from "../../baseAPI/Api";
+import { usePlaces } from "../../contextAPI/PlacesContext";
 
 const MAX_FILE_SIZE = 1.5 * 1024 * 1024;
 
-const AddLocationModal = ({
-  open,
-  handleClose,
-  refreshLocations,
-  username,
-}) => {
+const AddLocationModal = ({ open, handleClose, username }) => {
+  const { addPlace } = usePlaces();
   const [formData, setFormData] = useState({
     name: "",
     location: "",
@@ -60,9 +56,8 @@ const AddLocationModal = ({
     });
     locationData.append("addedBy", username);
     try {
-      await api.post("/places/add", locationData);
+      await addPlace(locationData);
       handleClose();
-      refreshLocations();
       setFormData({
         name: "",
         location: "",
