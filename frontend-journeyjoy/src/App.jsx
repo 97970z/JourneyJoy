@@ -11,22 +11,22 @@ import Navbar from "./components/Navbar/Navbar";
 import EditLocation from "./components/DetailComponents/EditLocation";
 
 function App() {
-  return (
-    <AuthProvider>
-      <PlacesProvider>
-        <BrowserRouter>
-          <Navbar />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/locations/:id" element={<LocationDetail />} />
-            <Route path="/edit/:id" element={<EditLocation />} />
-          </Routes>
-        </BrowserRouter>
-      </PlacesProvider>
-    </AuthProvider>
-  );
+	return (
+		<AuthProvider>
+			<PlacesProvider>
+				<BrowserRouter>
+					<Navbar />
+					<Routes>
+						<Route path="/" element={<Home />} />
+						<Route path="/register" element={<Register />} />
+						<Route path="/login" element={<Login />} />
+						<Route path="/locations/:id" element={<LocationDetail />} />
+						<Route path="/edit/:id" element={<EditLocation />} />
+					</Routes>
+				</BrowserRouter>
+			</PlacesProvider>
+		</AuthProvider>
+	);
 }
 
 export default App;
