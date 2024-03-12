@@ -48,7 +48,7 @@ export const PlacesProvider = ({ children }) => {
     try {
       const response = await api.put(`/places/${id}`, formData);
       setPlaces(
-        places.map((place) => (place._id === id ? response.data : place))
+        places.map((place) => (place._id === id ? response.data : place)),
       );
     } catch (error) {
       console.error("Failed to update location", error);

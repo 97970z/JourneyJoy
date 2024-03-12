@@ -8,7 +8,7 @@ const SearchFilters = ({ selectedGenres, setSelectedGenres, allGenres }) => {
     setSelectedGenres((prevSelectedGenres) =>
       prevSelectedGenres.includes(genre)
         ? prevSelectedGenres.filter((g) => g !== genre)
-        : [...prevSelectedGenres, genre]
+        : [...prevSelectedGenres, genre],
     );
   };
 

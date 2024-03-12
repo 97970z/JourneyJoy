@@ -5,7 +5,7 @@ import { usePlaces } from "../contextAPI/PlacesContext";
 import SearchBar from "../components/HomeComponents/SearchBar";
 import LocationGrid from "../components/HomeComponents/LocationGrid";
 import SearchFilters from "../components/HomeComponents/SearchFilters";
-import { StyledContainer, StyledHeroBox } from "./styles/homeStyles";
+import { StyledContainer, StyledHeroBox } from "./styles/HomeStyles";
 
 function Home() {
   const { places, isLoading } = usePlaces();
@@ -19,16 +19,12 @@ function Home() {
     "TV Show",
   ]);
 
-  useEffect(() => {
-    filterLocations();
-  }, [places, selectedGenres]);
-
   const filterLocations = () => {
     if (selectedGenres.length === 0) {
       setFilteredLocations(places);
     } else {
       const filtered = places.filter((location) =>
-        selectedGenres.some((genre) => location.genre.includes(genre))
+        selectedGenres.some((genre) => location.genre.includes(genre)),
       );
       setFilteredLocations(filtered);
     }
@@ -46,11 +42,15 @@ function Home() {
         location.description.toLowerCase().includes(search.toLowerCase()) ||
         location.location.toLowerCase().includes(search.toLowerCase()) ||
         location.featuredIn.some((feature) =>
-          feature.toLowerCase().includes(search.toLowerCase())
-        )
+          feature.toLowerCase().includes(search.toLowerCase()),
+        ),
     );
     setFilteredLocations(filtered);
   };
+
+  useEffect(() => {
+    filterLocations();
+  }, [places, selectedGenres]);
 
   if (isLoading) return <Typography>Loading...</Typography>;
 

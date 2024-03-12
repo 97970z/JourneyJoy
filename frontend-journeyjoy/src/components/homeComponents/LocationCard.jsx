@@ -9,7 +9,7 @@ const LocationCard = ({ _id, imageUrl, name, featuredIn }) => {
 
   const transformedImageUrl = imageUrl.replace(
     "/upload/",
-    "/upload/c_fill,h_300,w_400/"
+    "/upload/c_fill,h_300,w_400/",
   );
   const goToDetailPage = (id) => () => {
     navigate(`/locations/${id}`);
