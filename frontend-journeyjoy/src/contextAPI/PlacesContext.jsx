@@ -29,7 +29,10 @@ export const PlacesProvider = ({ children }) => {
 	const addPlace = async (formData) => {
 		try {
 			const response = await Api.post("/places/add", formData);
-			setPlaces([...places, response.data]);
+			const newPlace = response.data;
+
+			setPlaces([...places, newPlace]);
+			return newPlace._id;
 		} catch (error) {
 			console.error("Failed to add location", error);
 		}

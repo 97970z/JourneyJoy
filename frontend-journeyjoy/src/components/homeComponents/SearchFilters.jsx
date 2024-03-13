@@ -1,10 +1,9 @@
 // frontend/src/components/HomeComponents/SearchFilters.jsx
 import React from "react";
-import { Checkbox, FormGroup, FormControlLabel } from "@mui/material";
+import { Chip, Stack } from "@mui/material";
 
 const SearchFilters = ({ selectedGenres, setSelectedGenres, allGenres }) => {
-	const handleGenreChange = (event) => {
-		const genre = event.target.name;
+	const handleGenreChange = (genre) => () => {
 		setSelectedGenres((prevSelectedGenres) =>
 			prevSelectedGenres.includes(genre)
 				? prevSelectedGenres.filter((g) => g !== genre)
@@ -13,21 +12,18 @@ const SearchFilters = ({ selectedGenres, setSelectedGenres, allGenres }) => {
 	};
 
 	return (
-		<FormGroup row>
+		<Stack direction="row" spacing={1} flexWrap="wrap" justifyContent="center">
 			{allGenres.map((genre) => (
-				<FormControlLabel
-					control={
-						<Checkbox
-							checked={selectedGenres.includes(genre)}
-							onChange={handleGenreChange}
-							name={genre}
-						/>
-					}
-					label={genre}
+				<Chip
 					key={genre}
+					label={genre}
+					clickable
+					color={selectedGenres.includes(genre) ? "primary" : "default"}
+					onClick={handleGenreChange(genre)}
+					variant="outlined"
 				/>
 			))}
-		</FormGroup>
+		</Stack>
 	);
 };
 

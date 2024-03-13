@@ -2,10 +2,16 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
+import { styled } from "@mui/system";
 import LogoutIcon from "@mui/icons-material/Logout";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import AddLocationModal from "../HomeComponents/AddLocationModal";
 import { useAuth } from "../../contextAPI/AuthContext";
+
+const CustomAppBar = styled(AppBar)({
+	background: "linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)",
+	color: "#FFFFFF",
+});
 
 function Navbar() {
 	const navigate = useNavigate();
@@ -26,10 +32,7 @@ function Navbar() {
 	};
 
 	return (
-		<AppBar
-			position="static"
-			sx={{ color: "common.white", backgroundColor: "darkkhaki" }}
-		>
+		<CustomAppBar position="static">
 			<Toolbar>
 				<img
 					src="https://res.cloudinary.com/dl6f9clxo/image/upload/v1710141573/journeyjoy/f4wnhnul085ofcadmgjt.ico"
@@ -76,7 +79,11 @@ function Navbar() {
 								marginRight: 2,
 								border: "1px solid white",
 								borderRadius: "5px",
-								":hover": { backgroundColor: "white", color: "darkkhaki" },
+								":hover": {
+									backgroundColor: "white",
+									color: "coral",
+									fontWeight: "bold",
+								},
 							}}
 						>
 							장소 추가
@@ -96,7 +103,7 @@ function Navbar() {
 				handleClose={handleModalClose}
 				username={currentUser?.username}
 			/>
-		</AppBar>
+		</CustomAppBar>
 	);
 }
 
