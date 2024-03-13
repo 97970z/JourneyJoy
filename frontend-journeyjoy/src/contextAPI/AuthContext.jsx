@@ -1,6 +1,6 @@
 // frontend/src/contextAPI/AuthContext.jsx
 import React, { createContext, useContext, useState, useEffect } from "react";
-import api from "../baseAPI/Api";
+import Api from "../baseAPI/Api";
 
 const AuthContext = createContext();
 
@@ -19,9 +19,9 @@ export const AuthProvider = ({ children }) => {
 	}, []);
 
 	const fetchCurrentUser = async (accessToken) => {
-		api.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
+		Api.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
 		try {
-			const { data } = await api.get("/user/me");
+			const { data } = await Api.get("/user/me");
 			setCurrentUser(data);
 		} catch (error) {
 			console.error("Error fetching user", error);
@@ -35,7 +35,7 @@ export const AuthProvider = ({ children }) => {
 
 		if (refreshToken) {
 			try {
-				const { data } = await api.post("/auth/refresh", { refreshToken });
+				const { data } = await Api.post("/auth/refresh", { refreshToken });
 				console.log("New access token:", data.accessToken);
 				localStorage.setItem("accessToken", data.accessToken);
 				fetchCurrentUser(data.accessToken);
@@ -53,19 +53,19 @@ export const AuthProvider = ({ children }) => {
 	};
 
 	const login = async (username, password) => {
-		const { data } = await api.post("/auth/login", { username, password });
+		const { data } = await Api.post("/auth/login", { username, password });
 		setAuthTokens(data);
 	};
 
 	const register = async (username, password) => {
-		await api.post("/auth/register", { username, password });
+		await Api.post("/auth/register", { username, password });
 	};
 
 	const logout = () => {
 		localStorage.removeItem("accessToken");
 		localStorage.removeItem("refreshToken");
 		setCurrentUser(null);
-		delete api.defaults.headers.common["Authorization"];
+		delete Api.defaults.headers.common["Authorization"];
 	};
 
 	const value = { currentUser, login, register, logout, refreshToken };

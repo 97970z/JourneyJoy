@@ -1,18 +1,11 @@
 // frontend/src/components/Navbar/Navbar.jsx
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../../contextAPI/AuthContext";
-import {
-	AppBar,
-	Toolbar,
-	Typography,
-	Button,
-	Box,
-	IconButton,
-} from "@mui/material";
+import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import AddLocationModal from "../HomeComponents/AddLocationModal";
+import { useAuth } from "../../contextAPI/AuthContext";
 
 function Navbar() {
 	const navigate = useNavigate();
@@ -75,9 +68,19 @@ function Navbar() {
 						<Typography variant="body1" sx={{ marginRight: 2 }}>
 							{currentUser.username}
 						</Typography>
-						<IconButton color="inherit" onClick={handleModalOpen}>
-							<AddCircleOutlineIcon />
-						</IconButton>
+						<Button
+							startIcon={<AddCircleOutlineIcon />}
+							onClick={handleModalOpen}
+							sx={{
+								color: "white",
+								marginRight: 2,
+								border: "1px solid white",
+								borderRadius: "5px",
+								":hover": { backgroundColor: "white", color: "darkkhaki" },
+							}}
+						>
+							장소 추가
+						</Button>
 						<Button
 							startIcon={<LogoutIcon />}
 							onClick={handleLogout}

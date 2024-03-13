@@ -1,6 +1,6 @@
 // src/contextAPI/PlacesContext.jsx
 import React, { createContext, useContext, useState, useEffect } from "react";
-import api from "../baseAPI/Api";
+import Api from "../baseAPI/Api";
 
 const PlacesContext = createContext();
 
@@ -17,7 +17,7 @@ export const PlacesProvider = ({ children }) => {
 	const fetchPlaces = async () => {
 		setIsLoading(true);
 		try {
-			const response = await api.get("/places");
+			const response = await Api.get("/places");
 			setPlaces(response.data);
 		} catch (error) {
 			console.error("Failed to fetch places:", error);
@@ -28,7 +28,7 @@ export const PlacesProvider = ({ children }) => {
 
 	const addPlace = async (formData) => {
 		try {
-			const response = await api.post("/places/add", formData);
+			const response = await Api.post("/places/add", formData);
 			setPlaces([...places, response.data]);
 		} catch (error) {
 			console.error("Failed to add location", error);
@@ -37,7 +37,7 @@ export const PlacesProvider = ({ children }) => {
 
 	const deletePlace = async (id) => {
 		try {
-			await api.delete(`/places/${id}`);
+			await Api.delete(`/places/${id}`);
 			setPlaces(places.filter((place) => place._id !== id));
 		} catch (error) {
 			console.error("Failed to delete location", error);
@@ -46,7 +46,7 @@ export const PlacesProvider = ({ children }) => {
 
 	const updatePlace = async (id, formData) => {
 		try {
-			const response = await api.put(`/places/${id}`, formData);
+			const response = await Api.put(`/places/${id}`, formData);
 			setPlaces(
 				places.map((place) => (place._id === id ? response.data : place)),
 			);

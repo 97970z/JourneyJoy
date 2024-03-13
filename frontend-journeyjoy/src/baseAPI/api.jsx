@@ -1,12 +1,12 @@
-// frontend/src/baseAPI/api.js
+// frontend/src/baseAPI/Api
 import axios from "axios";
 
-const api = axios.create({
+const Api = axios.create({
 	baseURL: "http://localhost:5000/api",
 });
 
 // 모든 요청에 jwt 토큰을 헤더에 추가
-api.interceptors.request.use(
+Api.interceptors.request.use(
 	(config) => {
 		const token = localStorage.getItem("accessToken");
 		if (token) {
@@ -19,4 +19,4 @@ api.interceptors.request.use(
 	},
 );
 
-export default api;
+export default Api;
