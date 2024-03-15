@@ -1,9 +1,39 @@
 // frontend/src/pages/LocationDetail.jsx
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { Button, Container, Typography, CircularProgress } from "@mui/material";
+import {
+	Button,
+	Container,
+	Typography,
+	CircularProgress,
+	Box,
+	Paper,
+	IconButton,
+} from "@mui/material";
 import { useAuth } from "../contextAPI/AuthContext";
 import { usePlaces } from "../contextAPI/PlacesContext";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { styled } from "@mui/system";
+
+const DetailContainer = styled(Container)({
+	marginTop: "20px",
+	display: "flex",
+	flexDirection: "column",
+	alignItems: "center",
+	gap: "20px",
+});
+
+const Image = styled("img")({
+	maxWidth: "100%",
+	borderRadius: "5px",
+	boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+});
+
+const ActionButtons = styled(Box)({
+	display: "flex",
+	gap: "10px",
+});
 
 const LocationDetail = () => {
 	const { id } = useParams();
@@ -33,30 +63,36 @@ const LocationDetail = () => {
 	if (!location) return <Typography>Location not found.</Typography>;
 
 	return (
-		<Container>
-			<Typography variant="h4">{location.name}</Typography>
-			<img
-				src={location.imageUrl}
-				alt={location.name}
-				style={{ width: "100%", height: "auto", margin: "20px 0" }}
-			/>
-			<Typography variant="body1">{location.description}</Typography>
+		<DetailContainer>
+			<Typography variant="h3" gutterBottom>
+				{location.name}
+			</Typography>
+			<Image src={location.imageUrl} alt={location.name} />
+			<Paper
+				elevation={3}
+				sx={{ padding: "20px", maxWidth: 800, width: "100%" }}
+			>
+				<Typography variant="body1" paragraph>
+					{location.description}
+				</Typography>
+			</Paper>
 			{currentUser?.username === location.addedBy && (
-				<div>
+				<ActionButtons>
 					<Button
 						component={Link}
 						to={`/edit/${id}`}
-						variant="outlined"
-						style={{ marginRight: "10px" }}
+						variant="contained"
+						color="primary"
+						startIcon={<EditIcon />}
 					>
 						Edit
 					</Button>
-					<Button variant="outlined" color="error" onClick={handleDelete}>
-						Delete
-					</Button>
-				</div>
+					<IconButton color="error" onClick={handleDelete}>
+						<DeleteIcon />
+					</IconButton>
+				</ActionButtons>
 			)}
-		</Container>
+		</DetailContainer>
 	);
 };
 
