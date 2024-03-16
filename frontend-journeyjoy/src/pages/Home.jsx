@@ -5,6 +5,7 @@ import { usePlaces } from "../contextAPI/PlacesContext";
 import SearchBar from "../components/HomeComponents/SearchBar";
 import LocationGrid from "../components/HomeComponents/LocationGrid";
 import SearchFilters from "../components/HomeComponents/SearchFilters";
+import Logo from "../components/Logo/Logo";
 import { StyledContainer, StyledHeroBox } from "./styles/HomeStyles";
 
 function Home() {
@@ -57,18 +58,11 @@ function Home() {
 	return (
 		<StyledContainer>
 			<StyledHeroBox>
-				<Typography
-					variant="h2"
-					component="h1"
-					gutterBottom
-					sx={{ position: "relative", fontWeight: "bold" }}
-				>
-					JourneyJoy
-				</Typography>
-				<Typography variant="h5" sx={{ mb: 4, position: "relative" }}>
+				<Logo />
+				<Typography variant="h5" sx={{ mb: 4 }}>
 					지금 바로 JourneyJoy와 함께 여행을 떠나보세요!
 				</Typography>
-				<Box sx={{ position: "relative", zIndex: 1 }}>
+				<Box sx={{ display: "flex", justifyContent: "center" }}>
 					<SearchBar
 						search={search}
 						setSearch={setSearch}

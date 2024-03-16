@@ -12,7 +12,7 @@ const SearchBar = ({ search, setSearch, handleSearchSubmit }) => {
 	return (
 		<Box display="flex" justifyContent="center" alignItems="center">
 			<StyledTextField
-				label="검색"
+				label="검색어를 입력하세요."
 				variant="filled"
 				value={search}
 				onChange={handleSearchChange}
@@ -25,7 +25,7 @@ const SearchBar = ({ search, setSearch, handleSearchSubmit }) => {
 				onClick={handleSearchSubmit}
 				endIcon={<SearchIcon />}
 			>
-				Search
+				검색
 			</StyledButton>
 		</Box>
 	);

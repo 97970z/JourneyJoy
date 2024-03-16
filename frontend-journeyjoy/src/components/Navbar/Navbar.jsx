@@ -8,7 +8,7 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import AddLocationModal from "../HomeComponents/AddLocationModal";
 import { useAuth } from "../../contextAPI/AuthContext";
 
-const CustomAppBar = styled(AppBar)({
+const StyledAppBar = styled(AppBar)({
 	background: "linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)",
 	color: "#FFFFFF",
 });
@@ -32,19 +32,8 @@ function Navbar() {
 	};
 
 	return (
-		<CustomAppBar position="static">
+		<StyledAppBar position="static">
 			<Toolbar>
-				<img
-					src="https://res.cloudinary.com/dl6f9clxo/image/upload/v1710141573/journeyjoy/f4wnhnul085ofcadmgjt.ico"
-					alt="JourneyJoy"
-					style={{
-						display: "block",
-						marginLeft: "auto",
-						marginRight: "auto",
-						width: "50px",
-						height: "50px",
-					}}
-				/>
 				<Typography
 					variant="h6"
 					sx={{ flexGrow: 1, fontWeight: "bold", marginLeft: "10px" }}
@@ -103,7 +92,7 @@ function Navbar() {
 				handleClose={handleModalClose}
 				username={currentUser?.username}
 			/>
-		</CustomAppBar>
+		</StyledAppBar>
 	);
 }
 

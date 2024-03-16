@@ -1,20 +1,20 @@
 // frontend/src/pages/styles/useStyles.js
 import { styled } from "@mui/system";
-import { Container, Box } from "@mui/material";
 
-export const StyledContainer = styled(Container)({
+export const StyledContainer = styled("div")({
 	maxWidth: "xl",
+	margin: "auto",
 });
 
-export const StyledHeroBox = styled(Box)({
-	backgroundImage:
-		"url(https://res.cloudinary.com/dl6f9clxo/image/upload/v1710141742/journeyjoy/h4in9tr4edlnix2g2lkl.jpg)",
-	backgroundSize: "cover",
+export const StyledHeroBox = styled("div")(({ theme }) => ({
+	backgroundImage: "linear-gradient(to right, #0066ff, #00ccff)",
 	color: "white",
 	textAlign: "center",
-	padding: "100px 0",
-	marginBottom: "20px",
+	padding: theme.spacing(10, 2),
+	marginBottom: theme.spacing(4),
 	position: "relative",
+	borderRadius: "5px",
+	boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
 	"&:before": {
 		content: '""',
 		position: "absolute",
@@ -22,6 +22,8 @@ export const StyledHeroBox = styled(Box)({
 		right: 0,
 		bottom: 0,
 		left: 0,
-		backgroundColor: "rgba(0,0,0,0.3)",
+		background: "rgba(0,0,0,0.3)",
+		borderRadius: "5px",
 	},
-});
+	"& > *": { position: "relative", zIndex: 1 },
+}));
