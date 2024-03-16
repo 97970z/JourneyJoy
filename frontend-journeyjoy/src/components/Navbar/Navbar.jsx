@@ -1,7 +1,17 @@
 // frontend/src/components/Navbar/Navbar.jsx
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
+import {
+	AppBar,
+	Toolbar,
+	Typography,
+	Button,
+	Box,
+	IconButton,
+	Menu,
+	MenuItem,
+} from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
 import { styled } from "@mui/system";
 import LogoutIcon from "@mui/icons-material/Logout";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
@@ -9,14 +19,17 @@ import AddLocationModal from "../HomeComponents/AddLocationModal";
 import { useAuth } from "../../contextAPI/AuthContext";
 
 const StyledAppBar = styled(AppBar)({
-	background: "linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)",
+	background: "linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)",
 	color: "#FFFFFF",
+	boxShadow: "0 3px 5px 2px rgba(33, 203, 243, .3)",
 });
 
 function Navbar() {
 	const navigate = useNavigate();
 	const { currentUser, logout } = useAuth();
 	const [modalOpen, setModalOpen] = useState(false);
+	const [anchorEl, setAnchorEl] = useState(null);
+	const open = Boolean(anchorEl);
 
 	const handleLogout = () => {
 		logout();
@@ -31,16 +44,45 @@ function Navbar() {
 		setModalOpen(false);
 	};
 
+	const handleClick = (event) => {
+		setAnchorEl(event.currentTarget);
+	};
+
+	const handleClose = () => {
+		setAnchorEl(null);
+	};
+
 	return (
 		<StyledAppBar position="static">
 			<Toolbar>
-				<Typography
-					variant="h6"
-					sx={{ flexGrow: 1, fontWeight: "bold", marginLeft: "10px" }}
+				<IconButton
+					size="large"
+					edge="start"
+					color="inherit"
+					aria-label="menu"
+					sx={{ mr: 2 }}
+					onClick={handleClick}
 				>
-					<Link to="/" style={{ color: "inherit", textDecoration: "none" }}>
-						JourneyJoy
-					</Link>
+					<MenuIcon />
+				</IconButton>
+				<Menu
+					id="basic-menu"
+					anchorEl={anchorEl}
+					open={open}
+					onClose={handleClose}
+					MenuListProps={{
+						"aria-labelledby": "basic-button",
+					}}
+				>
+					<MenuItem onClick={handleClose} component={Link} to="/">
+						Home
+					</MenuItem>
+					<MenuItem onClick={handleClose} component={Link} to="/allplaces">
+						All Locations
+					</MenuItem>
+				</Menu>
+				<Typography variant="h6" sx={{ flexGrow: 1, fontWeight: "bold" }}>
+					JourneyJoy
 				</Typography>
 				{!currentUser ? (
 					<Box>

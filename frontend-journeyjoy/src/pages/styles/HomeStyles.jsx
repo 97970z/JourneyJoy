@@ -7,7 +7,7 @@ export const StyledContainer = styled("div")({
 });
 
 export const StyledHeroBox = styled("div")(({ theme }) => ({
-	backgroundImage: "linear-gradient(to right, #0066ff, #00ccff)",
+	background: "linear-gradient(45deg, #FE6B8B 15%, #FF8E53 70%)",
 	color: "white",
 	textAlign: "center",
 	padding: theme.spacing(10, 2),
