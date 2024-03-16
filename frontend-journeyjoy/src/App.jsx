@@ -7,6 +7,7 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
 import LocationDetail from "./pages/LocationDetail";
+import AllPages from "./pages/AllPages";
 import Navbar from "./components/Navbar/Navbar";
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
 						<Route path="/register" element={<Register />} />
 						<Route path="/login" element={<Login />} />
 						<Route path="/locations/:id" element={<LocationDetail />} />
+						<Route path="/allplaces" element={<AllPages />} />
 					</Routes>
 				</BrowserRouter>
 			</PlacesProvider>
