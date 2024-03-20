@@ -8,42 +8,13 @@ const PlacesContext = createContext();
 
 export const usePlaces = () => useContext(PlacesContext);
 
-const fetchExternalPlaces = async () => {
-	try {
-		const response = await axios.get(
-			"https://apis.data.go.kr/B551010/locfilming/locfilmingList",
-			{
-				params: {
-					serviceKey: import.meta.env.VITE_APP_OPEN_API_SERVICE_KEY,
-					pageNo: 1,
-					numOfRows: 1000,
-				},
-			},
-		);
-		const result = xml2js(response.data, { compact: true, spaces: 4 });
-		const items = result.response.item;
-
-		return items.map((item) => ({
-			id: item.filmingSeq._text,
-			movieTitle: item.movieTitle._text,
-			filmingLocation: item.filmingLocation._text,
-			productionYear: item.productionYear._text,
-			sido: item.sido._text,
-			lat: parseFloat(item.latitude._text),
-			lng: parseFloat(item.longitude._text),
-		}));
-	} catch (error) {
-		console.error("Failed to fetch external places:", error);
-		return [];
-	}
-};
-
 export const PlacesProvider = ({ children }) => {
 	const [places, setPlaces] = useState([]);
 	const [isLoading, setIsLoading] = useState(true);
 
 	useEffect(() => {
 		fetchPlaces();
+		fetchExternalPlaces();
 	}, []);
 
 	const fetchPlaces = async () => {
@@ -51,9 +22,6 @@ export const PlacesProvider = ({ children }) => {
 		try {
 			const response = await Api.get("/places");
 			setPlaces(response.data);
-
-			const externalPlaces = await fetchExternalPlaces();
-			setPlaces(externalPlaces);
 		} catch (error) {
 			console.error("Failed to fetch places:", error);
 		} finally {
@@ -90,6 +58,37 @@ export const PlacesProvider = ({ children }) => {
 			);
 		} catch (error) {
 			console.error("Failed to update location", error);
+		}
+	};
+
+	const fetchExternalPlaces = async () => {
+		try {
+			const response = await axios.get(
+				"https://apis.data.go.kr/B551010/locfilming/locfilmingList",
+				{
+					params: {
+						serviceKey: import.meta.env.VITE_OPEN_API_SERVICE_KEY,
+						pageNo: 1,
+						numOfRows: 20000,
+					},
+				},
+			);
+
+			const result = xml2js(response.data, { compact: true, spaces: 4 });
+			const items = result.response.item;
+
+			return items.map((item) => ({
+				id: item.filmingSeq._text,
+				movieTitle: item.movieTitle._text,
+				filmingLocation: item.filmingLocation._text,
+				productionYear: item.productionYear._text,
+				sido: item.sido._text,
+				lat: parseFloat(item.latitude._text),
+				lng: parseFloat(item.longitude._text),
+			}));
+		} catch (error) {
+			console.error("Failed to fetch external places:", error);
+			return [];
 		}
 	};
 
