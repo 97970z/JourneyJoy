@@ -1,8 +1,8 @@
 // frontend/src/pages/AllPage.jsx
 import React, { useState, useEffect } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import L from "leaflet";
 import MarkerClusterGroup from "react-leaflet-cluster";
-import "leaflet/dist/leaflet.css";
 import {
 	Box,
 	Drawer,
@@ -17,6 +17,14 @@ import {
 } from "@mui/material";
 import TuneSharpIcon from "@mui/icons-material/TuneSharp";
 import { usePlaces } from "../contextAPI/PlacesContext";
+
+const customIcon = new L.Icon({
+	iconUrl:
+		"https://res.cloudinary.com/dl6f9clxo/image/upload/v1711023540/journeyjoy/rc5rmev7gsotxieckjp9.svg",
+	iconSize: [30, 30],
+	iconAnchor: [17, 30],
+	popupAnchor: [0, -30],
+});
 
 function AllPlacesPage() {
 	const { fetchExternalPlaces } = usePlaces();
@@ -99,7 +107,6 @@ function AllPlacesPage() {
 					</List>
 				</Box>
 			</Drawer>
-
 			<MapContainer
 				className="markercluster-map"
 				center={[37.5665, 126.978]}
@@ -112,7 +119,11 @@ function AllPlacesPage() {
 				/>
 				<MarkerClusterGroup chunkedLoading>
 					{filteredPlaces.map((place, index) => (
-						<Marker key={index} position={[place.lat, place.lng]}>
+						<Marker
+							key={index}
+							position={[place.lat, place.lng]}
+							icon={customIcon}
+						>
 							<Popup>
 								{place.movieTitle}
 								<br />
