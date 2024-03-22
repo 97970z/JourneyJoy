@@ -1,12 +1,12 @@
 // frontend/src/pages/styles/useStyles.js
 import { styled } from "@mui/system";
 
-export const StyledContainer = styled("div")({
+export const HomeContainer = styled("div")({
 	maxWidth: "xl",
 	margin: "auto",
 });
 
-export const StyledHeroBox = styled("div")(({ theme }) => ({
+export const HomeBox = styled("div")(({ theme }) => ({
 	background: "linear-gradient(45deg, #FE6B8B 15%, #FF8E53 70%)",
 	color: "white",
 	textAlign: "center",

@@ -2,11 +2,11 @@
 import React, { useState, useEffect } from "react";
 import { Box, Typography } from "@mui/material";
 import { usePlaces } from "../contextAPI/PlacesContext";
-import SearchBar from "../components/HomeComponents/SearchBar";
-import LocationGrid from "../components/HomeComponents/LocationGrid";
-import SearchFilters from "../components/HomeComponents/SearchFilters";
 import Logo from "../components/Logo/Logo";
-import { StyledContainer, StyledHeroBox } from "./styles/HomeStyles";
+import SearchBar from "../components/Home/SearchBar";
+import LocationGrid from "../components/Home/LocationGrid";
+import SearchFilters from "../components/Home/SearchFilters";
+import { HomeContainer, HomeBox } from "./styles/HomeStyles";
 
 function Home() {
 	const { places, isLoading } = usePlaces();
@@ -56,8 +56,8 @@ function Home() {
 	if (isLoading) return <Typography>Loading...</Typography>;
 
 	return (
-		<StyledContainer>
-			<StyledHeroBox>
+		<HomeContainer>
+			<HomeBox>
 				<Logo />
 				<Typography variant="h5" sx={{ mb: 4 }}>
 					지금 바로 JourneyJoy와 함께 여행을 떠나보세요!
@@ -69,14 +69,14 @@ function Home() {
 						handleSearchSubmit={handleSearchSubmit}
 					/>
 				</Box>
-			</StyledHeroBox>
+			</HomeBox>
 			<SearchFilters
 				selectedGenres={selectedGenres}
 				setSelectedGenres={setSelectedGenres}
 				allGenres={allGenres}
 			/>
 			<LocationGrid locations={filteredLocations} />
-		</StyledContainer>
+		</HomeContainer>
 	);
 }
 

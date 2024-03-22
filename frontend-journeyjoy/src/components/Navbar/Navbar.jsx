@@ -15,7 +15,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { styled } from "@mui/system";
 import LogoutIcon from "@mui/icons-material/Logout";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import AddLocationModal from "../HomeComponents/AddLocationModal";
+import AddLocationModal from "../Home/AddLocationModal";
 import { useAuth } from "../../contextAPI/AuthContext";
 
 const StyledAppBar = styled(AppBar)({
