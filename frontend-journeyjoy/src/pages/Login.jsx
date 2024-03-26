@@ -29,7 +29,7 @@ function Login() {
 	};
 
 	return (
-		<>
+		<div className="register" style={{ marginTop: "100px" }}>
 			<Logo />
 			<FormContainer title="Login">
 				<AuthenticationForm
@@ -41,7 +41,7 @@ function Login() {
 					action="Login"
 				/>
 			</FormContainer>
-		</>
+		</div>
 	);
 }
 

@@ -5,6 +5,7 @@ import { useAuth } from "../contextAPI/AuthContext.jsx";
 import Logo from "../components/Logo/Logo.jsx";
 import AuthenticationForm from "../components/Register/AuthenticationForm.jsx";
 import FormContainer from "../components/Register/FormContainer.jsx";
+import { margin } from "@mui/system";
 
 function Register() {
 	const navigate = useNavigate();
@@ -29,7 +30,7 @@ function Register() {
 	};
 
 	return (
-		<>
+		<div className="register" style={{ marginTop: "100px" }}>
 			<Logo />
 			<FormContainer title="Register">
 				<AuthenticationForm
@@ -41,7 +42,7 @@ function Register() {
 					action="Register"
 				/>
 			</FormContainer>
-		</>
+		</div>
 	);
 }
 
