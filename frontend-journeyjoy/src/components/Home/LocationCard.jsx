@@ -7,10 +7,13 @@ import { StyledCard, StyledCardMedia, OverlayText } from "./StyledComponents";
 const LocationCard = ({ _id, imageUrl, name, featuredIn }) => {
 	const navigate = useNavigate();
 
-	const transformedImageUrl = imageUrl.replace(
-		"/upload/",
-		"/upload/c_fill,h_300,w_400/",
-	);
+	const defaultImageUrl =
+		"https://res.cloudinary.com/dl6f9clxo/image/upload/v1710141573/journeyjoy/f4wnhnul085ofcadmgjt.ico";
+
+	const transformedImageUrl = imageUrl
+		? imageUrl.replace("/upload/", "/upload/c_fill,h_300,w_400/")
+		: defaultImageUrl;
+
 	const goToDetailPage = (id) => () => {
 		navigate(`/locations/${id}`);
 	};
