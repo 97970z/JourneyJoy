@@ -82,7 +82,9 @@ function Navbar() {
 					</MenuItem>
 				</Menu>
 				<Typography variant="h6" sx={{ flexGrow: 1, fontWeight: "bold" }}>
-					JourneyJoy
+					<Link to="/" style={{ textDecoration: "none", color: "white" }}>
+						JourneyJoy
+					</Link>
 				</Typography>
 				{!currentUser ? (
 					<Box>

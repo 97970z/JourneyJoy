@@ -9,7 +9,7 @@ import SearchFilters from "../components/Home/SearchFilters";
 import { HomeContainer, HomeBox } from "./styles/HomeStyles";
 
 function Home() {
-	const { places, isLoading } = usePlaces();
+	const { userPlaces, isLoading } = usePlaces();
 	const [search, setSearch] = useState("");
 	const [filteredLocations, setFilteredLocations] = useState([]);
 	const [selectedGenres, setSelectedGenres] = useState([]);
@@ -22,9 +22,9 @@ function Home() {
 
 	const filterLocations = () => {
 		if (selectedGenres.length === 0) {
-			setFilteredLocations(places);
+			setFilteredLocations(userPlaces);
 		} else {
-			const filtered = places.filter((location) =>
+			const filtered = userPlaces.filter((location) =>
 				selectedGenres.some((genre) => location.genre.includes(genre)),
 			);
 			setFilteredLocations(filtered);
@@ -33,11 +33,11 @@ function Home() {
 
 	const handleSearchSubmit = async () => {
 		if (!search) {
-			setFilteredLocations(places);
+			setFilteredLocations(userPlaces);
 			return;
 		}
 
-		const filtered = places.filter(
+		const filtered = userPlaces.filter(
 			(location) =>
 				location.name.toLowerCase().includes(search.toLowerCase()) ||
 				location.description.toLowerCase().includes(search.toLowerCase()) ||
@@ -51,7 +51,7 @@ function Home() {
 
 	useEffect(() => {
 		filterLocations();
-	}, [places, selectedGenres]);
+	}, [userPlaces, selectedGenres]);
 
 	if (isLoading) return <Typography>Loading...</Typography>;
 

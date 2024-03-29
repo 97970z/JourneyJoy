@@ -9,7 +9,8 @@ const PlacesContext = createContext();
 export const usePlaces = () => useContext(PlacesContext);
 
 export const PlacesProvider = ({ children }) => {
-	const [places, setPlaces] = useState([]);
+	const [userPlaces, setUserPlaces] = useState([]); // User-contributed places
+	const [apiPlaces, setApiPlaces] = useState([]);
 	const [isLoading, setIsLoading] = useState(true);
 
 	useEffect(() => {
@@ -21,7 +22,7 @@ export const PlacesProvider = ({ children }) => {
 		setIsLoading(true);
 		try {
 			const response = await Api.get("/places");
-			setPlaces(response.data);
+			setUserPlaces(response.data);
 		} catch (error) {
 			console.error("Failed to fetch places:", error);
 		} finally {
@@ -34,7 +35,7 @@ export const PlacesProvider = ({ children }) => {
 			const response = await Api.post("/places/add", formData);
 			const newPlace = response.data;
 
-			setPlaces([...places, newPlace]);
+			setUserPlaces([...userPlaces, newPlace]);
 			return newPlace._id;
 		} catch (error) {
 			console.error("Failed to add location", error);
@@ -44,7 +45,7 @@ export const PlacesProvider = ({ children }) => {
 	const deletePlace = async (id) => {
 		try {
 			await Api.delete(`/places/${id}`);
-			setPlaces(places.filter((place) => place._id !== id));
+			setUserPlaces(userPlaces.filter((place) => place._id !== id));
 		} catch (error) {
 			console.error("Failed to delete location", error);
 		}
@@ -53,8 +54,8 @@ export const PlacesProvider = ({ children }) => {
 	const updatePlace = async (id, formData) => {
 		try {
 			const response = await Api.put(`/places/${id}`, formData);
-			setPlaces(
-				places.map((place) => (place._id === id ? response.data : place)),
+			setUserPlaces(
+				userPlaces.map((place) => (place._id === id ? response.data : place)),
 			);
 		} catch (error) {
 			console.error("Failed to update location", error);
@@ -62,41 +63,61 @@ export const PlacesProvider = ({ children }) => {
 	};
 
 	const fetchExternalPlaces = async () => {
-		try {
-			const response = await axios.get(
-				"https://apis.data.go.kr/B551010/locfilming/locfilmingList",
-				{
-					params: {
-						serviceKey: import.meta.env.VITE_OPEN_API_SERVICE_KEY,
-						pageNo: 1,
-						numOfRows: 20000,
+		setIsLoading(true);
+		const cachedPlaces = localStorage.getItem("cachedExternalPlaces");
+		if (cachedPlaces) {
+			const parsedCachedPlaces = JSON.parse(cachedPlaces);
+
+			setApiPlaces(parsedCachedPlaces);
+			setIsLoading(false);
+		} else {
+			try {
+				const response = await axios.get(
+					"https://apis.data.go.kr/B551010/locfilming/locfilmingList",
+					{
+						params: {
+							serviceKey: import.meta.env.VITE_OPEN_API_SERVICE_KEY,
+							pageNo: 1,
+							numOfRows: 20000,
+						},
 					},
-				},
-			);
+				);
+				const result = xml2js(response.data, { compact: true, spaces: 4 });
 
-			const result = xml2js(response.data, { compact: true, spaces: 4 });
-			const items = result.response.item;
+				let items = result.response?.item ?? [];
 
-			return items.map((item) => ({
-				id: item.filmingSeq._text,
-				movieTitle: item.movieTitle._text,
-				filmingLocation: item.filmingLocation._text,
-				productionYear: item.productionYear._text,
-				sceneDesc: item.sceneDesc?._text,
-				sido: item.sido._text,
-				lat: parseFloat(item.latitude._text),
-				lng: parseFloat(item.longitude._text),
-			}));
-		} catch (error) {
-			console.error("Failed to fetch external places:", error);
-			return [];
+				if (!Array.isArray(items)) items = [items];
+
+				const formattedPlaces = items.map((item) => ({
+					id: item.filmingSeq._text,
+					movieTitle: item.movieTitle._text,
+					filmingLocation: item.filmingLocation._text,
+					productionYear: item.productionYear?._text ?? "N/A",
+					sceneDesc: item.sceneDesc?._text ?? "No description",
+					sido: item.sido._text,
+					lat: parseFloat(item.latitude._text),
+					lng: parseFloat(item.longitude._text),
+				}));
+
+				localStorage.setItem(
+					"cachedExternalPlaces",
+					JSON.stringify(formattedPlaces),
+				);
+
+				setApiPlaces(formattedPlaces);
+			} catch (error) {
+				console.error("Failed to fetch external places:", error);
+			} finally {
+				setIsLoading(false);
+			}
 		}
 	};
 
 	return (
 		<PlacesContext.Provider
 			value={{
-				places,
+				userPlaces,
+				apiPlaces,
 				isLoading,
 				addPlace,
 				deletePlace,

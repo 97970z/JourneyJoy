@@ -7,29 +7,29 @@ import PlacesFilter from "../components/LocationMap/PlacesFilter";
 import PlacesMap from "../components/LocationMap/PlacesMap";
 
 function LocationMap() {
-	const { fetchExternalPlaces } = usePlaces();
-	const [places, setPlaces] = useState([]);
+	const { apiPlaces, fetchExternalPlaces } = usePlaces();
 	const [selectedSido, setSelectedSido] = useState("");
 	const [sidos, setSidos] = useState([]);
 	const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
 	useEffect(() => {
 		const fetchData = async () => {
-			const items = await fetchExternalPlaces();
-
-			const uniqueSidos = [...new Set(items.map((item) => item.sido))].sort();
+			if (apiPlaces.length === 0) {
+				await fetchExternalPlaces();
+			}
+			const uniqueSidos = [
+				...new Set(apiPlaces.map((item) => item.sido)),
+			].sort();
 			setSidos(["All", ...uniqueSidos]);
-
-			setPlaces(items);
 		};
 
 		fetchData();
-	}, []);
+	}, [apiPlaces, fetchExternalPlaces]);
 
 	const filteredPlaces =
 		selectedSido !== "All"
-			? places.filter((place) => place.sido === selectedSido)
-			: places;
+			? apiPlaces.filter((place) => place.sido === selectedSido)
+			: apiPlaces;
 
 	const toggleDrawer = (open) => (event) => {
 		if (
@@ -38,7 +38,6 @@ function LocationMap() {
 		) {
 			return;
 		}
-
 		setIsDrawerOpen(open);
 	};
 

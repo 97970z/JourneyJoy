@@ -13,7 +13,7 @@ const LocationDetail = () => {
 	const navigate = useNavigate();
 	const { id } = useParams();
 	const { currentUser } = useAuth();
-	const { places, updatePlace, deletePlace } = usePlaces();
+	const { userPlaces, updatePlace, deletePlace } = usePlaces();
 	const [location, setLocation] = useState(null);
 	const [isEditing, setIsEditing] = useState(false);
 	const [formData, setFormData] = useState({
@@ -24,7 +24,7 @@ const LocationDetail = () => {
 	const [error, setError] = useState("");
 
 	useEffect(() => {
-		const foundLocation = places.find((place) => place._id === id);
+		const foundLocation = userPlaces.find((place) => place._id === id);
 		setLocation(foundLocation);
 		if (foundLocation) {
 			setFormData({
@@ -33,7 +33,7 @@ const LocationDetail = () => {
 			});
 		}
 		setIsLoading(false);
-	}, [id, places]);
+	}, [id, userPlaces]);
 
 	const handleChange = (event) => {
 		const { name, value } = event.target;
@@ -78,7 +78,15 @@ const LocationDetail = () => {
 			) : (
 				<LocationDetailDisplay {...location} />
 			)}
-			<Image src={location.imageUrl} alt={location.name} />
+			<Image
+				src={location.imageUrl}
+				alt={location.name}
+				loading="lazy"
+				style={{
+					maxWidth: "100%",
+					borderRadius: "5px",
+				}}
+			/>
 			{currentUser?.username === location.addedBy && (
 				<LocationActionButtons
 					isEditing={isEditing}
