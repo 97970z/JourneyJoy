@@ -9,7 +9,7 @@ const PlacesContext = createContext();
 export const usePlaces = () => useContext(PlacesContext);
 
 export const PlacesProvider = ({ children }) => {
-	const [userPlaces, setUserPlaces] = useState([]); // User-contributed places
+	const [userPlaces, setUserPlaces] = useState([]);
 	const [apiPlaces, setApiPlaces] = useState([]);
 	const [isLoading, setIsLoading] = useState(true);
 

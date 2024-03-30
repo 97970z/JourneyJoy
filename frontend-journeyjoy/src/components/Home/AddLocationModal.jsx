@@ -76,9 +76,9 @@ const AddLocationModal = ({ open, handleClose, username }) => {
 		locationData.append("addedBy", username);
 
 		try {
-			const response = await addPlace(locationData);
+			const submitID = await addPlace(locationData);
 			handleClose();
-			navigate(`/locations/${response.data._id}`);
+			navigate(`/locations/${submitID}`);
 			setFormData({
 				name: "",
 				location: "",

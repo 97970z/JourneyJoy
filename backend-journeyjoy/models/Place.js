@@ -11,6 +11,7 @@ const placeSchema = new mongoose.Schema(
     featuredIn: [{ type: String }],
     genre: [{ type: String }],
     addedBy: { type: String, ref: "User" },
+    status: { type: String, required: true, default: "Pending" },
   },
   { timestamps: true }
 );

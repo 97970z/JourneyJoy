@@ -8,25 +8,33 @@ import authenticateToken from "../middleware/authenticateToken.js";
 const router = Router();
 
 // 장소 추가
-router.post("/add", parser.single("image"), async (req, res) => {
-  const { name, location, description, featuredIn, genre, addedBy } = req.body;
-  try {
-    const newPlace = new Place({
-      name,
-      location,
-      description,
-      imageUrl: req.file.path,
-      imagePublicId: req.file.filename,
-      featuredIn,
-      genre,
-      addedBy,
-    });
-    await newPlace.save();
-    res.status(201).json(newPlace);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
+router.post(
+  "/add",
+  parser.single("image"),
+  authenticateToken,
+  async (req, res) => {
+    const { name, location, description, featuredIn, genre, addedBy } =
+      req.body;
+
+    try {
+      const newPlace = new Place({
+        name,
+        location,
+        description,
+        imageUrl: req.file.path,
+        imagePublicId: req.file.filename,
+        featuredIn,
+        genre,
+        addedBy,
+        status: "Pending",
+      });
+      await newPlace.save();
+      res.status(201).json(newPlace);
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
   }
-});
+);
 
 // 장소 검색
 router.get("/search", async (req, res) => {
@@ -133,8 +141,8 @@ router.delete("/:id", authenticateToken, async (req, res) => {
 // 모든 장소 가져오기
 router.get("/", async (req, res) => {
   try {
-    const places = await Place.find();
-    res.status(200).json(places);
+    const approvedPlaces = await Place.find({ status: "Approved" });
+    res.json(approvedPlaces);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

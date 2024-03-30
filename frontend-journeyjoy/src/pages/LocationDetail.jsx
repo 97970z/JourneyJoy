@@ -20,13 +20,13 @@ const LocationDetail = () => {
 		name: "",
 		description: "",
 	});
-	const [isLoading, setIsLoading] = useState(false);
+	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState("");
 
 	useEffect(() => {
 		const foundLocation = userPlaces.find((place) => place._id === id);
-		setLocation(foundLocation);
 		if (foundLocation) {
+			setLocation(foundLocation);
 			setFormData({
 				name: foundLocation.name,
 				description: foundLocation.description,
@@ -45,7 +45,6 @@ const LocationDetail = () => {
 			await deletePlace(id);
 			navigate("/");
 		} catch (error) {
-			console.error("Error deleting location:", error);
 			setError("Failed to delete location. Please try again.");
 		}
 	};
@@ -60,7 +59,6 @@ const LocationDetail = () => {
 			setLocation({ ...location, ...formData });
 			setError("");
 		} catch (error) {
-			console.error("Error updating location:", error);
 			setError("Failed to update location. Please try again.");
 		} finally {
 			setIsLoading(false);
@@ -68,8 +66,8 @@ const LocationDetail = () => {
 	};
 
 	if (isLoading) return <CircularProgress />;
-
-	if (!location) return <Typography>Location not found.</Typography>;
+	if (!location)
+		return <Typography>{error || "Loading location details..."}</Typography>;
 
 	return (
 		<LocationDetailContainer>
@@ -78,15 +76,7 @@ const LocationDetail = () => {
 			) : (
 				<LocationDetailDisplay {...location} />
 			)}
-			<Image
-				src={location.imageUrl}
-				alt={location.name}
-				loading="lazy"
-				style={{
-					maxWidth: "100%",
-					borderRadius: "5px",
-				}}
-			/>
+			<Image src={location.imageUrl} alt={location.name} loading="lazy" />
 			{currentUser?.username === location.addedBy && (
 				<LocationActionButtons
 					isEditing={isEditing}

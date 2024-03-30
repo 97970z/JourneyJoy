@@ -1,6 +1,6 @@
 // frontend/src/components/LocationMap/PlacesMap.jsx
 import React from "react";
-import { MapContainer, TileLayer, Popup } from "react-leaflet";
+import { MapContainer, TileLayer } from "react-leaflet";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import PlaceMarker from "./PlaceMarker";
 
