@@ -80,6 +80,11 @@ function Navbar() {
 					<MenuItem onClick={handleClose} component={Link} to="/allplaces">
 						All Locations
 					</MenuItem>
+					{currentUser && currentUser.role === "admin" && (
+						<MenuItem onClick={handleClose} component={Link} to="/adminpanel">
+							Admin Panel
+						</MenuItem>
+					)}
 				</Menu>
 				<Typography variant="h6" sx={{ flexGrow: 1, fontWeight: "bold" }}>
 					<Link to="/" style={{ textDecoration: "none", color: "white" }}>
