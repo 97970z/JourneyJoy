@@ -21,7 +21,8 @@ export const PlacesProvider = ({ children }) => {
 	const fetchPlaces = async () => {
 		setIsLoading(true);
 		try {
-			const response = await Api.get("/places");
+			const status = "Approved";
+			const response = await Api.get(`/places/status/${status}`);
 			setUserPlaces(response.data);
 		} catch (error) {
 			console.error("Failed to fetch places:", error);

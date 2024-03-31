@@ -5,7 +5,6 @@ import { useAuth } from "../contextAPI/AuthContext.jsx";
 import Logo from "../components/Logo/Logo.jsx";
 import AuthenticationForm from "../components/Register/AuthenticationForm.jsx";
 import FormContainer from "../components/Register/FormContainer.jsx";
-import { margin } from "@mui/system";
 
 function Register() {
 	const navigate = useNavigate();

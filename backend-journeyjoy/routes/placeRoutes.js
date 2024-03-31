@@ -4,6 +4,7 @@ import { v2 as cloudinary } from "cloudinary";
 import Place from "../models/Place.js";
 import parser from "../config/cloudinaryConfig.js";
 import authenticateToken from "../middleware/authenticateToken.js";
+import adminCheck from "../middleware/adminCheck.js";
 
 const router = Router();
 
@@ -138,13 +139,29 @@ router.delete("/:id", authenticateToken, async (req, res) => {
   }
 });
 
-// 모든 장소 가져오기
-router.get("/", async (req, res) => {
+router.get("/status/:status", async (req, res) => {
+  const { status } = req.params;
   try {
-    const approvedPlaces = await Place.find({ status: "Approved" });
-    res.json(approvedPlaces);
+    const places = await Place.find({ status: status });
+    res.json(places);
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+});
+
+// 장소 상태 업데이트
+router.put("/:id/status", authenticateToken, adminCheck, async (req, res) => {
+  const { status } = req.body;
+  try {
+    const place = await Place.findById(req.params.id);
+    if (!place) {
+      return res.status(404).send("Place not found");
+    }
+    place.status = status;
+    await place.save();
+    res.json(place);
+  } catch (error) {
+    res.status(500).send("Server error");
   }
 });
 
