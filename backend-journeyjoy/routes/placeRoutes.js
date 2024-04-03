@@ -2,6 +2,7 @@
 import { Router } from "express";
 import { v2 as cloudinary } from "cloudinary";
 import Place from "../models/Place.js";
+import User from "../models/User.js";
 import parser from "../config/cloudinaryConfig.js";
 import authenticateToken from "../middleware/authenticateToken.js";
 import adminCheck from "../middleware/adminCheck.js";
@@ -121,7 +122,9 @@ router.delete("/:id", authenticateToken, async (req, res) => {
       return res.status(404).json({ message: "Place not found" });
     }
 
-    if (place.addedBy !== req.user.username) {
+    const getUserRole = await User.findById(req.user.id);
+
+    if (place.addedBy !== req.user.userId && getUserRole.role !== "admin") {
       return res
         .status(403)
         .json({ message: "Not authorized to delete this place" });

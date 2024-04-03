@@ -1,13 +1,12 @@
 // src/baseAPI/AdminPanelApi.jsx
 import Api from "./Api";
 
-export const fetchPendingPlaces = async () => {
+export const fetchAllPlaces = async () => {
 	try {
-		const status = "Pending";
-		const response = await Api.get(`/places/status/${status}`);
+		const response = await Api.get("/admin/all");
 		return response.data;
 	} catch (error) {
-		console.error("Failed to fetch places", error);
+		console.error("Failed to fetch all places", error);
 		return [];
 	}
 };
@@ -41,5 +40,25 @@ export const updateUserRole = async (id, role) => {
 	} catch (error) {
 		console.error("Failed to update user role", error);
 		return null;
+	}
+};
+
+export const editPlace = async (id, updatedData) => {
+	try {
+		const response = await Api.put(`/places/${id}`, updatedData);
+		return response.data;
+	} catch (error) {
+		console.error("Failed to update place", error);
+		return null;
+	}
+};
+
+export const deletePlace = async (id) => {
+	try {
+		await Api.delete(`/places/${id}`);
+		return true;
+	} catch (error) {
+		console.error("Failed to delete place", error);
+		return false;
 	}
 };

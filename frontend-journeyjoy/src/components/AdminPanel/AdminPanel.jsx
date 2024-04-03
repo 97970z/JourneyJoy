@@ -1,11 +1,22 @@
 // frontend/src/components/AdminPanel/AdminPanel.jsx
 import React, { useState, useEffect } from "react";
+import {
+	Button,
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableRow,
+	Select,
+	MenuItem,
+} from "@mui/material";
 import { useAuth } from "../../contextAPI/AuthContext";
 import {
-	fetchPendingPlaces,
+	fetchAllPlaces,
 	updatePlaceStatus,
 	fetchUsers,
 	updateUserRole,
+	deletePlace,
 } from "../../baseAPI/AdminPanelApi";
 
 const AdminPanel = () => {
@@ -21,12 +32,17 @@ const AdminPanel = () => {
 	}, [currentUser]);
 
 	const loadPlaces = async () => {
-		const data = await fetchPendingPlaces();
+		const data = await fetchAllPlaces();
 		setPlaces(data);
 	};
 
 	const handleUpdatePlaceStatus = async (id, status) => {
 		await updatePlaceStatus(id, status);
+		loadPlaces();
+	};
+
+	const handleDeletePlace = async (id) => {
+		await deletePlace(id);
 		loadPlaces();
 	};
 
@@ -40,64 +56,80 @@ const AdminPanel = () => {
 		loadUsers();
 	};
 
+	const openEditForm = (id) => {
+		console.log("Open edit form for", id);
+	};
+
 	return (
 		<div>
 			<h1>Admin Panel</h1>
 			<h2>Places</h2>
-			<table>
-				<thead>
-					<tr>
-						<th>Name</th>
-						<th>Status</th>
-					</tr>
-				</thead>
-				<tbody>
+			<Table>
+				<TableHead>
+					<TableRow>
+						<TableCell>Name</TableCell>
+						<TableCell>Status</TableCell>
+						<TableCell>Actions</TableCell>
+					</TableRow>
+				</TableHead>
+				<TableBody>
 					{places.map((place) => (
-						<tr key={place._id}>
-							<td>{place.name}</td>
-							<td>
-								<select
+						<TableRow key={place._id}>
+							<TableCell>{place.name}</TableCell>
+							<TableCell>
+								<Select
 									value={place.status}
 									onChange={(e) =>
 										handleUpdatePlaceStatus(place._id, e.target.value)
 									}
 								>
-									<option value="Pending">Pending</option>
-									<option value="Approved">Approved</option>
-									<option value="Rejected">Rejected</option>
-								</select>
-							</td>
-						</tr>
+									<MenuItem value="Pending">Pending</MenuItem>
+									<MenuItem value="Approved">Approved</MenuItem>
+									<MenuItem value="Rejected">Rejected</MenuItem>
+								</Select>
+							</TableCell>
+							<TableCell>
+								<Button onClick={() => openEditForm(place._id)} color="primary">
+									Edit
+								</Button>
+								<Button
+									onClick={() => handleDeletePlace(place._id)}
+									color="secondary"
+								>
+									Delete
+								</Button>
+							</TableCell>
+						</TableRow>
 					))}
-				</tbody>
-			</table>
+				</TableBody>
+			</Table>
 			<h2>Users</h2>
-			<table>
-				<thead>
-					<tr>
-						<th>Username</th>
-						<th>Role</th>
-					</tr>
-				</thead>
-				<tbody>
+			<Table>
+				<TableHead>
+					<TableRow>
+						<TableCell>Username</TableCell>
+						<TableCell>Role</TableCell>
+					</TableRow>
+				</TableHead>
+				<TableBody>
 					{users.map((user) => (
-						<tr key={user._id}>
-							<td>{user.username}</td>
-							<td>
-								<select
+						<TableRow key={user._id}>
+							<TableCell>{user.username}</TableCell>
+							<TableCell>
+								<Select
 									value={user.role}
 									onChange={(e) =>
 										handleUpdateUserRole(user._id, e.target.value)
 									}
 								>
-									<option value="user">User</option>
-									<option value="admin">Admin</option>
-								</select>
-							</td>
-						</tr>
+									<MenuItem value="user">User</MenuItem>
+									<MenuItem value="admin">Admin</MenuItem>
+								</Select>
+							</TableCell>
+						</TableRow>
 					))}
-				</tbody>
-			</table>
+				</TableBody>
+			</Table>
 		</div>
 	);
 };
