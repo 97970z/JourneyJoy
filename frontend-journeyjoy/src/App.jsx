@@ -9,8 +9,8 @@ import Login from "./pages/Login";
 import Home from "./pages/Home";
 import LocationDetail from "./pages/LocationDetail";
 import LocationMap from "./pages/LocationMap";
+import AdminPanel from "./pages/AdminPanel";
 import Navbar from "./components/Navbar/Navbar";
-import AdminPanel from "./components/AdminPanel/AdminPanel";
 
 const AppRoutes = () => {
 	const { currentUser } = useAuth();

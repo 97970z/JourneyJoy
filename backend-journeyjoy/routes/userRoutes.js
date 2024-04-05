@@ -9,9 +9,12 @@ const router = Router();
 
 // 사용자 목록 조회
 router.get("/", async (req, res) => {
+  const { _page = 1, _limit = 10 } = req.query;
+  const skip = (_page - 1) * _limit;
   try {
-    const users = await User.find();
-    res.json(users);
+    const users = await User.find().skip(skip).limit(Number(_limit));
+    const total = await User.countDocuments();
+    res.json({ data: users, total });
   } catch (error) {
     res.status(500).send("Server error");
   }

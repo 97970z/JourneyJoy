@@ -1,4 +1,4 @@
-// frontend/src/components/AdminPanel/AdminPanel.jsx
+// frontend/src/pages/AdminPanel.jsx
 import React, { useState, useEffect } from "react";
 import {
 	Button,
@@ -9,31 +9,45 @@ import {
 	TableRow,
 	Select,
 	MenuItem,
+	Pagination,
 } from "@mui/material";
-import { useAuth } from "../../contextAPI/AuthContext";
+import { useAuth } from "../contextAPI/AuthContext";
 import {
 	fetchAllPlaces,
 	updatePlaceStatus,
 	fetchUsers,
 	updateUserRole,
 	deletePlace,
-} from "../../baseAPI/AdminPanelApi";
+} from "../baseAPI/AdminPanelApi";
 
 const AdminPanel = () => {
 	const { currentUser } = useAuth();
 	const [places, setPlaces] = useState([]);
 	const [users, setUsers] = useState([]);
+	const [currentPagePlaces, setCurrentPagePlaces] = useState(1);
+	const [currentPageUsers, setCurrentPageUsers] = useState(1);
+	const itemsPerPage = 10;
 
 	useEffect(() => {
 		if (currentUser.role === "admin") {
 			loadPlaces();
+		}
+	}, [currentUser, currentPagePlaces]);
+
+	useEffect(() => {
+		if (currentUser.role === "admin") {
 			loadUsers();
 		}
-	}, [currentUser]);
+	}, [currentUser, currentPageUsers]);
 
 	const loadPlaces = async () => {
-		const data = await fetchAllPlaces();
-		setPlaces(data);
+		const response = await fetchAllPlaces(currentPagePlaces, itemsPerPage);
+		setPlaces(response.data);
+	};
+
+	const loadUsers = async () => {
+		const response = await fetchUsers(currentPageUsers, itemsPerPage);
+		setUsers(response.data);
 	};
 
 	const handleUpdatePlaceStatus = async (id, status) => {
@@ -46,11 +60,6 @@ const AdminPanel = () => {
 		loadPlaces();
 	};
 
-	const loadUsers = async () => {
-		const data = await fetchUsers();
-		setUsers(data);
-	};
-
 	const handleUpdateUserRole = async (id, role) => {
 		await updateUserRole(id, role);
 		loadUsers();
@@ -59,6 +68,17 @@ const AdminPanel = () => {
 	const openEditForm = (id) => {
 		console.log("Open edit form for", id);
 	};
+
+	const handlePageChangePlaces = (event, value) => {
+		setCurrentPagePlaces(value);
+	};
+
+	const handlePageChangeUsers = (event, value) => {
+		setCurrentPageUsers(value);
+	};
+
+	const totalPlacesPages = Math.ceil(places.length / itemsPerPage);
+	const totalUsersPages = Math.ceil(users.length / itemsPerPage);
 
 	return (
 		<div>
@@ -103,6 +123,12 @@ const AdminPanel = () => {
 					))}
 				</TableBody>
 			</Table>
+			<Pagination
+				count={totalPlacesPages}
+				page={currentPagePlaces}
+				onChange={handlePageChangePlaces}
+				color="primary"
+			/>
 			<h2>Users</h2>
 			<Table>
 				<TableHead>
@@ -130,6 +156,12 @@ const AdminPanel = () => {
 					))}
 				</TableBody>
 			</Table>
+			<Pagination
+				count={totalUsersPages}
+				page={currentPageUsers}
+				onChange={handlePageChangeUsers}
+				color="secondary"
+			/>
 		</div>
 	);
 };
