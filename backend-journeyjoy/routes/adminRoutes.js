@@ -12,14 +12,21 @@ router.get("/", adminCheck, (req, res) => {
 
 // 관리자 패널에서 모든 장소 가져오기
 router.get("/all", authenticateToken, adminCheck, async (req, res) => {
-  const { _page = 1, _limit = 10 } = req.query;
-  const skip = (_page - 1) * _limit;
+  const { page = 1, limit = 10 } = req.query;
   try {
-    const places = await Place.find().skip(skip).limit(Number(_limit));
+    const places = await Place.find()
+      .skip((page - 1) * limit)
+      .limit(parseInt(limit))
+      .exec();
     const total = await Place.countDocuments();
-    res.json({ data: places, total });
+    res.json({
+      data: places,
+      total,
+      page: parseInt(page),
+      limit: parseInt(limit),
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ message: "Server error", error });
   }
 });
 

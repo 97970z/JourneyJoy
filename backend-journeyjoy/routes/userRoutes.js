@@ -9,10 +9,11 @@ const router = Router();
 
 // 사용자 목록 조회
 router.get("/", async (req, res) => {
-  const { _page = 1, _limit = 10 } = req.query;
-  const skip = (_page - 1) * _limit;
+  const { page = 1, limit = 10 } = req.query;
   try {
-    const users = await User.find().skip(skip).limit(Number(_limit));
+    const users = await User.find()
+      .skip((page - 1) * limit)
+      .limit(parseInt(limit));
     const total = await User.countDocuments();
     res.json({ data: users, total });
   } catch (error) {

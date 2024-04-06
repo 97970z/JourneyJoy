@@ -1,7 +1,7 @@
 // src/baseAPI/AdminPanelApi.jsx
 import Api from "./Api";
 
-export const fetchAllPlaces = async (page = 1, limit = 10) => {
+export const fetchAllPlaces = async (page, limit) => {
 	try {
 		const response = await Api.get(`/admin/all?_page=${page}&_limit=${limit}`);
 		return response.data;
@@ -21,7 +21,7 @@ export const updatePlaceStatus = async (id, status) => {
 	}
 };
 
-export const fetchUsers = async (page = 1, limit = 10) => {
+export const fetchUsers = async (page, limit) => {
 	try {
 		const response = await Api.get(`/user?_page=${page}&_limit=${limit}`);
 		return response.data;
