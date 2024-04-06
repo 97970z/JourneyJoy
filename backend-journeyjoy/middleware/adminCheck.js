@@ -1,6 +1,7 @@
 // backend/middleware/adminCheck.js
 import jwt from "jsonwebtoken";
-import User from "../models/User.js"; // 사용자 모델을 임포트
+import User from "../models/User.js";
+import { jwtSecret } from "../config/envConfig.js";
 
 const adminCheck = async (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
@@ -9,7 +10,7 @@ const adminCheck = async (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, jwtSecret);
     req.user = decoded; // jwt의 payload에 접근해서 req.user에 할당
 
     // userId를 사용하여 데이터베이스에서 사용자 조회
