@@ -160,6 +160,16 @@ router.put("/:id/status", authenticateToken, adminCheck, async (req, res) => {
     if (!place) {
       return res.status(404).send("Place not found");
     }
+
+    if (status === "Rejected") {
+      if (place.imagePublicId) {
+        await cloudinary.uploader.destroy(place.imagePublicId);
+      }
+
+      await Place.deleteOne({ _id: req.params.id });
+      return res.status(204).send();
+    }
+
     place.status = status;
     await place.save();
     res.json(place);
