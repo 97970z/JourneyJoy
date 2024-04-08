@@ -16,7 +16,7 @@ const authenticateToken = async (req, res, next) => {
       const user = await User.findById(decoded.userId);
       if (!user) return res.sendStatus(404);
       req.user = { id: user._id.toString(), username: user.username };
-      next(); // Proceed to the next middleware/route handler
+      next();
     } catch (error) {
       return res.sendStatus(500);
     }

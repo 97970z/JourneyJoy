@@ -1,5 +1,5 @@
 // frontend/src/contextAPI/AuthContext.jsx
-import React, { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import Api from "../baseAPI/Api";
 
 const AuthContext = createContext();
@@ -25,7 +25,6 @@ export const AuthProvider = ({ children }) => {
 			setCurrentUser(data);
 		} catch (error) {
 			console.error("Error fetching user", error);
-			// 만약 토큰이 만료되서 사용자 정보를 못가져오면 refresh
 			refreshToken();
 		}
 	};
@@ -36,12 +35,11 @@ export const AuthProvider = ({ children }) => {
 		if (refreshToken) {
 			try {
 				const { data } = await Api.post("/auth/refresh", { refreshToken });
-				console.log("New access token:", data.accessToken);
 				localStorage.setItem("accessToken", data.accessToken);
 				fetchCurrentUser(data.accessToken);
 			} catch (error) {
 				console.error("Error refreshing token", error);
-				logout(); // 재발급 실패하면 로그아웃
+				logout();
 			}
 		}
 	};

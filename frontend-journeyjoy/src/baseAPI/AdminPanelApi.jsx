@@ -33,8 +33,6 @@ export const fetchUsers = async (page, limit) => {
 
 export const updateUserRole = async (id, role) => {
 	try {
-		console.log("id", id);
-		console.log("role", role);
 		const response = await Api.put(`/user/${id}/role`, { role });
 		return response.data;
 	} catch (error) {

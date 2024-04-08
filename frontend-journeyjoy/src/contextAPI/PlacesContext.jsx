@@ -1,5 +1,5 @@
 // src/contextAPI/PlacesContext.jsx
-import React, { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
 import { xml2js } from "xml-js";
 import Api from "../baseAPI/Api";

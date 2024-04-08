@@ -16,6 +16,6 @@ const placeSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-placeSchema.index({ name: 1, location: 1 }); // Creating an index
+placeSchema.index({ name: 1, location: 1 });
 
 export default mongoose.model("Place", placeSchema);

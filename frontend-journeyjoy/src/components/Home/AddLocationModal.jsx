@@ -1,5 +1,5 @@
 // frontend/src/components/HomeComponents/AddLocationButton.jsx
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
 	Box,
@@ -18,7 +18,7 @@ import {
 } from "@mui/material";
 import { usePlaces } from "../../contextAPI/PlacesContext";
 
-const MAX_FILE_SIZE = 1.5 * 1024 * 1024; // 1.5 MB
+const MAX_FILE_SIZE = 1.5 * 1024 * 1024;
 
 const AddLocationModal = ({ open, handleClose, username }) => {
 	const navigate = useNavigate();

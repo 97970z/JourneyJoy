@@ -1,5 +1,5 @@
 // frontend/src/pages/LocationMap.jsx
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Box, IconButton, Typography } from "@mui/material";
 import TuneSharpIcon from "@mui/icons-material/TuneSharp";
 import { usePlaces } from "../contextAPI/PlacesContext";

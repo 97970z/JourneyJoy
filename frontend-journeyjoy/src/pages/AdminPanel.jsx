@@ -1,5 +1,5 @@
 // frontend/src/pages/AdminPanel.jsx
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
 	Button,
 	Table,
@@ -65,9 +65,7 @@ const AdminPanel = () => {
 		loadUsers();
 	};
 
-	const openEditForm = (id) => {
-		console.log("Open edit form for", id);
-	};
+	const openEditForm = (id) => {};
 
 	const handlePageChangePlaces = (event, value) => {
 		setCurrentPagePlaces(value);

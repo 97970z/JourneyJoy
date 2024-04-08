@@ -1,5 +1,5 @@
 // frontend/src/pages/Home.jsx
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Box, Typography } from "@mui/material";
 import { usePlaces } from "../contextAPI/PlacesContext";
 import Logo from "../components/Logo/Logo";

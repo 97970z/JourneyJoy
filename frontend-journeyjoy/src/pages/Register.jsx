@@ -1,5 +1,5 @@
 // frontend/src/pages/Login.jsx
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contextAPI/AuthContext.jsx";
 import Logo from "../components/Logo/Logo.jsx";

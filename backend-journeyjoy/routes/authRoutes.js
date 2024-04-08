@@ -28,7 +28,6 @@ router.post(
     }
 
     try {
-      console.log(req.body);
       const hashedPassword = await hash(req.body.password, 10);
       const newUser = new User({
         username: req.body.username,
@@ -71,14 +70,12 @@ router.post("/login", async (req, res) => {
 // Refresh Token을 사용하여 새로운 Access Token 발급
 router.post("/refresh", async (req, res) => {
   const { refreshToken } = req.body;
-  console.log("refreshToken:", refreshToken);
   if (!refreshToken)
     return res.status(401).json({ message: "Refresh Token is required" });
 
   try {
     const decoded = jwt.verify(refreshToken, refreshTokenSecret);
     const user = await User.findById(decoded.userId);
-    console.log("user:", user);
     if (user.refreshToken !== refreshToken) {
       return res.status(403).json({ message: "Refresh Token is not valid" });
     }
@@ -86,7 +83,6 @@ router.post("/refresh", async (req, res) => {
     const newAccessToken = jwt.sign({ userId: user._id }, jwtSecret, {
       expiresIn: "1h",
     });
-    console.log("newAccessToken:", newAccessToken);
     res.json({ accessToken: newAccessToken });
   } catch (error) {
     res.status(403).json({ message: "Invalid Refresh Token" });
