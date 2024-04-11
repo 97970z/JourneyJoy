@@ -1,0 +1,11 @@
+{
+  "name": "journeyjoy",
+  "version": "1.0.0",
+  "description": "JourneyJoy",
+  "scripts": {
+    "start": "concurrently \"cd frontend-journeyjoy && npm run dev\" \"cd backend-journeyjoy && npm run dev\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
