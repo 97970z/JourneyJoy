@@ -17,11 +17,14 @@ const PlacesMap = ({ places }) => {
 				attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
 			/>
 			<MarkerClusterGroup chunkedLoading>
-				{places
+				{/* {places
 					.filter((place) => place.sceneDesc && place.sceneDesc.trim() !== "")
 					.map((place, index) => (
 						<PlaceMarker key={index} place={place} />
-					))}
+					))} */}
+				{places.map((place, index) => (
+					<PlaceMarker key={index} place={place} />
+				))}
 			</MarkerClusterGroup>
 		</MapContainer>
 	);

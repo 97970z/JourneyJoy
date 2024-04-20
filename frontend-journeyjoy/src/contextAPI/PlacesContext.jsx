@@ -94,7 +94,7 @@ export const PlacesProvider = ({ children }) => {
 					movieTitle: item.movieTitle._text,
 					filmingLocation: item.filmingLocation._text,
 					productionYear: item.productionYear?._text ?? "N/A",
-					sceneDesc: item.sceneDesc?._text ?? "No description",
+					sceneDesc: item.sceneDesc?._text ?? "",
 					sido: item.sido._text,
 					lat: parseFloat(item.latitude._text),
 					lng: parseFloat(item.longitude._text),

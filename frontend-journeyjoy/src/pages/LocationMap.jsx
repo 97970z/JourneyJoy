@@ -1,14 +1,6 @@
-// // frontend/src/pages/LocationMap.jsx
+// frontend/src/pages/LocationMap.jsx
 import { useState, useEffect } from "react";
-import {
-	Box,
-	IconButton,
-	Typography,
-	TextField,
-	Button,
-	Snackbar,
-	Alert,
-} from "@mui/material";
+import { Box, IconButton, Typography, TextField, Button } from "@mui/material";
 import TuneSharpIcon from "@mui/icons-material/TuneSharp";
 import { usePlaces } from "../contextAPI/PlacesContext";
 import PlacesFilter from "../components/LocationMap/PlacesFilter";
@@ -17,9 +9,9 @@ import PlacesMap from "../components/LocationMap/PlacesMap";
 function LocationMap() {
 	const { apiPlaces, fetchExternalPlaces } = usePlaces();
 	const [sidos, setSidos] = useState([]);
-	const [selectedSido, setSelectedSido] = useState("");
+	const [selectedSido, setSelectedSido] = useState("None");
 	const [searchTerm, setSearchTerm] = useState("");
-	const [openAlert, setOpenAlert] = useState(false);
+	const [filteredPlaces, setFilteredPlaces] = useState([]);
 	const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
 	useEffect(() => {
@@ -30,40 +22,41 @@ function LocationMap() {
 			const uniqueSidos = [
 				...new Set(apiPlaces.map((item) => item.sido)),
 			].sort();
-			setSidos(["All", ...uniqueSidos]);
+			setSidos(["None", "All", ...uniqueSidos]);
 		};
 		fetchData();
 	}, [apiPlaces, fetchExternalPlaces]);
 
-	const filteredPlaces = apiPlaces.filter((place) => {
-		return selectedSido === "All" || place.sido === selectedSido;
-	});
-
-	const toggleDrawer = (open) => (event) => {
-		if (
-			event.type === "keydown" &&
-			(event.key === "Tab" || event.key === "Shift")
-		) {
-			return;
+	useEffect(() => {
+		if (searchTerm) {
+			applySearch();
+		} else if (selectedSido !== "None") {
+			applyFilter();
+		} else {
+			setFilteredPlaces([]);
 		}
-		setIsDrawerOpen(open);
+	}, [searchTerm, selectedSido, apiPlaces]);
+
+	const applyFilter = () => {
+		const results = apiPlaces.filter(
+			(place) => selectedSido === "All" || place.sido === selectedSido,
+		);
+		setFilteredPlaces(results);
+	};
+
+	const applySearch = () => {
+		const searchResults = apiPlaces.filter((place) =>
+			place.movieTitle.toLowerCase().includes(searchTerm.toLowerCase()),
+		);
+		setFilteredPlaces(searchResults);
 	};
 
 	const handleSearch = () => {
-		if (selectedSido !== "All") {
-			handleOpenAlert();
-		}
+		applySearch();
 	};
 
-	const handleOpenAlert = () => {
-		setOpenAlert(true);
-	};
-
-	const handleCloseAlert = (event, reason) => {
-		if (reason === "clickaway") {
-			return;
-		}
-		setOpenAlert(false);
+	const toggleDrawer = (open) => () => {
+		setIsDrawerOpen(open);
 	};
 
 	return (
@@ -99,19 +92,6 @@ function LocationMap() {
 					</Button>
 				</Box>
 			</Box>
-			<Snackbar
-				open={openAlert}
-				autoHideDuration={6000}
-				onClose={handleCloseAlert}
-			>
-				<Alert
-					onClose={handleCloseAlert}
-					severity="warning"
-					sx={{ width: "100%" }}
-				>
-					필터에서 All을 선택하시고 검색해주세요!
-				</Alert>
-			</Snackbar>
 			<PlacesFilter
 				isOpen={isDrawerOpen}
 				toggleDrawer={toggleDrawer}

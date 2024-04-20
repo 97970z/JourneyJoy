@@ -106,9 +106,6 @@ function Navbar() {
 					</Box>
 				) : (
 					<Box display="flex" alignItems="center">
-						<Typography variant="body1" sx={{ marginRight: 2 }}>
-							{currentUser.username}
-						</Typography>
 						<Button
 							startIcon={<AddCircleOutlineIcon />}
 							onClick={handleModalOpen}
