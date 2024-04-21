@@ -1,4 +1,4 @@
-// frontend/src/components/LocationMap/PlacesFilter.jsx
+// frontend/src/components/LocationMap/PlaceFilter.jsx
 import React from "react";
 import {
 	Box,
@@ -11,7 +11,7 @@ import {
 	MenuItem,
 } from "@mui/material";
 
-const PlacesFilter = ({
+const PlaceFilter = ({
 	isOpen,
 	toggleDrawer,
 	sidos,
@@ -49,4 +49,4 @@ const PlacesFilter = ({
 	);
 };
 
-export default PlacesFilter;
+export default PlaceFilter;

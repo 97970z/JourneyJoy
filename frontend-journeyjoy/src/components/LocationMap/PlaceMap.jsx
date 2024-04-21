@@ -1,10 +1,10 @@
-// frontend/src/components/LocationMap/PlacesMap.jsx
+// frontend/src/components/LocationMap/PlaceMap.jsx
 import React from "react";
 import { MapContainer, TileLayer } from "react-leaflet";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import PlaceMarker from "./PlaceMarker";
 
-const PlacesMap = ({ places }) => {
+const PlaceMap = ({ places }) => {
 	return (
 		<MapContainer
 			className="markercluster-map"
@@ -30,4 +30,4 @@ const PlacesMap = ({ places }) => {
 	);
 };
 
-export default PlacesMap;
+export default PlaceMap;
