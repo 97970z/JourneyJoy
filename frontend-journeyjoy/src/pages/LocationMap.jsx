@@ -1,6 +1,14 @@
 // frontend/src/pages/LocationMap.jsx
 import { useState, useEffect } from "react";
-import { Box, IconButton, Typography, TextField, Button } from "@mui/material";
+import {
+	Box,
+	IconButton,
+	Typography,
+	TextField,
+	Button,
+	Snackbar,
+	Alert,
+} from "@mui/material";
 import TuneSharpIcon from "@mui/icons-material/TuneSharp";
 import { usePlaces } from "../contextAPI/PlacesContext";
 import PlacesFilter from "../components/LocationMap/PlacesFilter";
@@ -13,21 +21,24 @@ function LocationMap() {
 	const [searchTerm, setSearchTerm] = useState("");
 	const [filteredPlaces, setFilteredPlaces] = useState([]);
 	const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+	const [alertInfo, setAlertInfo] = useState({ open: false, message: "" });
 
 	useEffect(() => {
-		const fetchData = async () => {
-			if (apiPlaces.length === 0) {
-				await fetchExternalPlaces();
-			}
-			const uniqueSidos = [
-				...new Set(apiPlaces.map((item) => item.sido)),
-			].sort();
-			setSidos(["None", "All", ...uniqueSidos]);
-		};
-		fetchData();
-	}, [apiPlaces, fetchExternalPlaces]);
+		initializePlaces();
+	}, [apiPlaces]);
+
+	const initializePlaces = async () => {
+		if (apiPlaces.length === 0) {
+			await fetchExternalPlaces();
+		}
+		setSidos(["None", "All", ...new Set(apiPlaces.map((item) => item.sido))]);
+	};
 
 	useEffect(() => {
+		filterPlaces();
+	}, [searchTerm, selectedSido, apiPlaces]);
+
+	const filterPlaces = () => {
 		if (searchTerm) {
 			applySearch();
 		} else if (selectedSido !== "None") {
@@ -35,11 +46,16 @@ function LocationMap() {
 		} else {
 			setFilteredPlaces([]);
 		}
-	}, [searchTerm, selectedSido, apiPlaces]);
+	};
 
 	const applyFilter = () => {
 		const results = apiPlaces.filter(
-			(place) => selectedSido === "All" || place.sido === selectedSido,
+			(place) =>
+				(selectedSido === "All" ||
+					place.sido === selectedSido ||
+					selectedSido === "") &&
+				(searchTerm === "" ||
+					place.movieTitle.toLowerCase().includes(searchTerm.toLowerCase())),
 		);
 		setFilteredPlaces(results);
 	};
@@ -51,11 +67,23 @@ function LocationMap() {
 		setFilteredPlaces(searchResults);
 	};
 
-	const handleSearch = () => {
-		applySearch();
+	const handleSearchClick = () => {
+		if (!searchTerm.trim()) {
+			showAlert("검색어를 입력해주세요.");
+			return;
+		}
+		filterPlaces();
 	};
 
-	const toggleDrawer = (open) => () => {
+	const showAlert = (message) => {
+		setAlertInfo({ open: true, message });
+	};
+
+	const handleCloseAlert = () => {
+		setAlertInfo({ ...alertInfo, open: false });
+	};
+
+	const handleDrawerToggle = (open) => () => {
 		setIsDrawerOpen(open);
 	};
 
@@ -70,7 +98,7 @@ function LocationMap() {
 					margin: "10px 0 10px 0",
 				}}
 			>
-				<IconButton onClick={toggleDrawer(true)}>
+				<IconButton onClick={handleDrawerToggle(true)}>
 					<TuneSharpIcon fontSize="large" />
 					<Typography variant="h6">Filter</Typography>
 				</IconButton>
@@ -83,7 +111,7 @@ function LocationMap() {
 						style={{ flex: 1 }}
 					/>
 					<Button
-						onClick={handleSearch}
+						onClick={handleSearchClick}
 						variant="contained"
 						color="primary"
 						style={{ marginLeft: "10px" }}
@@ -92,9 +120,22 @@ function LocationMap() {
 					</Button>
 				</Box>
 			</Box>
+			<Snackbar
+				open={alertInfo.open}
+				autoHideDuration={6000}
+				onClose={handleCloseAlert}
+			>
+				<Alert
+					onClose={handleCloseAlert}
+					severity="info"
+					sx={{ width: "100%" }}
+				>
+					{alertInfo.message}
+				</Alert>
+			</Snackbar>
 			<PlacesFilter
 				isOpen={isDrawerOpen}
-				toggleDrawer={toggleDrawer}
+				toggleDrawer={handleDrawerToggle}
 				sidos={sidos}
 				selectedSido={selectedSido}
 				setSelectedSido={setSelectedSido}
