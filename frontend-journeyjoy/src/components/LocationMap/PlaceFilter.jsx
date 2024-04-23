@@ -35,8 +35,8 @@ const PlaceFilter = ({
 								onChange={(e) => setSelectedSido(e.target.value)}
 								label="Sido"
 							>
-								{sidos.map((sido) => (
-									<MenuItem key={sido} value={sido}>
+								{sidos.map((sido, index) => (
+									<MenuItem key={index} value={sido}>
 										{sido}
 									</MenuItem>
 								))}
