@@ -1,34 +1,29 @@
 import { styled } from "@mui/system";
 
-export const CustomPopup = styled("div")({
-	borderRadius: "8px",
-	overflow: "hidden",
-	fontFamily: "Arial, sans-serif",
-});
-
 export const CustomPopupHeader = styled("div")({
-	backgroundColor: "#007bff",
+	backgroundColor: "#0056b3",
 	color: "#ffffff",
-	padding: "10px 15px",
-	fontSize: "16px",
+	padding: "12px 16px",
+	fontSize: "18px",
+	fontWeight: "bold",
 });
 
 export const CustomPopupBody = styled("div")({
-	padding: "15px",
-	backgroundColor: "#f9f9f9",
+	padding: "16px",
+	backgroundColor: "#f8f9fa",
 });
 
 export const CustomPopupSection = styled("div")({
-	marginBottom: "10px",
+	marginBottom: "12px",
 });
 
 export const CustomPopupTitle = styled("div")({
 	fontWeight: "bold",
-	color: "#333333",
+	color: "#000",
 	marginBottom: "5px",
 });
 
 export const CustomPopupContent = styled("div")({
-	color: "#666666",
-	lineHeight: "1.4",
+	color: "#666",
+	lineHeight: "1.5",
 });
