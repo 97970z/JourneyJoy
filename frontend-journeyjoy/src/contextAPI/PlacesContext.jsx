@@ -1,7 +1,5 @@
 // src/contextAPI/PlacesContext.jsx
 import { createContext, useContext, useState, useEffect } from "react";
-import axios from "axios";
-import { xml2js } from "xml-js";
 import Api from "../baseAPI/Api";
 
 const PlacesContext = createContext();
@@ -11,11 +9,11 @@ export const usePlaces = () => useContext(PlacesContext);
 export const PlacesProvider = ({ children }) => {
 	const [userPlaces, setUserPlaces] = useState([]);
 	const [apiPlaces, setApiPlaces] = useState([]);
+	const [festaPlaces, setFestaPlaces] = useState([]);
 	const [isLoading, setIsLoading] = useState(true);
 
 	useEffect(() => {
 		fetchPlaces();
-		fetchExternalPlaces();
 	}, []);
 
 	const fetchPlaces = async () => {
@@ -65,52 +63,25 @@ export const PlacesProvider = ({ children }) => {
 
 	const fetchExternalPlaces = async () => {
 		setIsLoading(true);
-		const cachedPlaces = localStorage.getItem("cachedExternalPlaces");
-		if (cachedPlaces) {
-			const parsedCachedPlaces = JSON.parse(cachedPlaces);
-
-			setApiPlaces(parsedCachedPlaces);
+		try {
+			const response = await Api.get("/places/external-places");
+			setApiPlaces(response.data);
+		} catch (error) {
+			console.error("Failed to fetch external places:", error);
+		} finally {
 			setIsLoading(false);
-		} else {
-			try {
-				const response = await axios.get(
-					"https://apis.data.go.kr/B551010/locfilming/locfilmingList",
-					{
-						params: {
-							serviceKey: import.meta.env.VITE_OPEN_API_SERVICE_KEY,
-							pageNo: 1,
-							numOfRows: 20000,
-						},
-					},
-				);
-				const result = xml2js(response.data, { compact: true, spaces: 4 });
+		}
+	};
 
-				let items = result.response?.item ?? [];
-
-				if (!Array.isArray(items)) items = [items];
-
-				const formattedPlaces = items.map((item) => ({
-					id: item.filmingSeq._text,
-					movieTitle: item.movieTitle._text,
-					filmingLocation: item.filmingLocation._text,
-					productionYear: item.productionYear?._text ?? "N/A",
-					sceneDesc: item.sceneDesc?._text ?? "",
-					sido: item.sido._text,
-					lat: parseFloat(item.latitude._text),
-					lng: parseFloat(item.longitude._text),
-				}));
-
-				localStorage.setItem(
-					"cachedExternalPlaces",
-					JSON.stringify(formattedPlaces),
-				);
-
-				setApiPlaces(formattedPlaces);
-			} catch (error) {
-				console.error("Failed to fetch external places:", error);
-			} finally {
-				setIsLoading(false);
-			}
+	const fetchExternalPlaces_Festa = async () => {
+		setIsLoading(true);
+		try {
+			const response = await Api.get("/places/festivals");
+			setFestaPlaces(response.data);
+		} catch (error) {
+			console.error("Failed to fetch festival places:", error);
+		} finally {
+			setIsLoading(false);
 		}
 	};
 
@@ -119,12 +90,14 @@ export const PlacesProvider = ({ children }) => {
 			value={{
 				userPlaces,
 				apiPlaces,
+				festaPlaces,
 				isLoading,
 				addPlace,
 				deletePlace,
 				updatePlace,
 				fetchPlaces,
 				fetchExternalPlaces,
+				fetchExternalPlaces_Festa,
 			}}
 		>
 			{children}

@@ -7,13 +7,13 @@ const PlaceSearch = ({ searchTerm, setSearchTerm }) => {
 	};
 
 	return (
-		<Box style={{ display: "flex", alignItems: "center", width: "80%" }}>
+		<Box>
 			<TextField
-				label="Search by Movie Title"
+				label="영화 제목을 검색하세요"
 				variant="outlined"
 				value={searchTerm}
 				onChange={handleSearchChange}
-				style={{ flex: 1 }}
+				style={{ flex: 1, backgroundColor: "white" }}
 			/>
 		</Box>
 	);
