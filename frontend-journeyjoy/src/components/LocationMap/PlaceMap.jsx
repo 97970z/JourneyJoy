@@ -8,18 +8,16 @@ import {
 	ZoomControl,
 } from "react-kakao-maps-sdk";
 import useKakaoLoader from "./useKakaoLoader";
-import {
-	CustomPopupHeader,
-	CustomPopupBody,
-	CustomPopupSection,
-	CustomPopupTitle,
-	CustomPopupContent,
-} from "../../pages/styles/CustomPopup.jsx";
 import Carousel from "react-material-ui-carousel";
+import CustomInfoWindow from "./CustomInfoWindow";
 
 const PlaceMap = ({ places, center }) => {
 	useKakaoLoader();
 	const [activePlaces, setActivePlaces] = useState([]);
+	const [markerClickCenter, setMarkerClickCenter] = useState({
+		lat: 37.5665,
+		lng: 126.978,
+	});
 	const mapRef = useRef(null);
 
 	useEffect(() => {
@@ -31,6 +29,8 @@ const PlaceMap = ({ places, center }) => {
 	}, [center]);
 
 	const handleMarkerClick = (clickedPlace) => {
+		setMarkerClickCenter({ lat: clickedPlace.lat, lng: clickedPlace.lng });
+
 		const similarPlaces = places.filter(
 			(place) =>
 				place.lat === clickedPlace.lat && place.lng === clickedPlace.lng,
@@ -40,14 +40,14 @@ const PlaceMap = ({ places, center }) => {
 
 	return (
 		<Map
-			center={{ lat: 37.5665, lng: 126.978 }}
+			center={markerClickCenter}
 			style={{ width: "100%", height: "70vh" }}
 			level={10}
 			onCreate={(map) => (mapRef.current = map)}
 		>
 			<MapTypeControl position={"TOPRIGHT"} />
 			<ZoomControl position={"RIGHT"} />
-			<MarkerClusterer averageCenter={true} minLevel={4}>
+			<MarkerClusterer averageCenter={true} minLevel={5}>
 				{places.map((place) => (
 					<MapMarker
 						key={place.id}
@@ -71,7 +71,6 @@ const PlaceMap = ({ places, center }) => {
 									backgroundColor: "#fff",
 									borderRadius: "10px",
 									boxShadow: "0 2px 6px rgba(0,0,0,0.3)",
-									height: "370px",
 									overflow: "auto",
 								}}
 							>
@@ -86,31 +85,11 @@ const PlaceMap = ({ places, center }) => {
 									}}
 								>
 									{activePlaces.map((item, index) => (
-										<div key={index}>
-											<CustomPopupHeader>{item.movieTitle}</CustomPopupHeader>
-											<CustomPopupBody>
-												{item.sceneDesc && (
-													<CustomPopupSection>
-														<CustomPopupTitle>촬영 장면 설명</CustomPopupTitle>
-														<CustomPopupContent>
-															{item.sceneDesc}
-														</CustomPopupContent>
-													</CustomPopupSection>
-												)}
-												<CustomPopupSection>
-													<CustomPopupTitle>촬영 장소</CustomPopupTitle>
-													<CustomPopupContent>
-														{item.filmingLocation}
-													</CustomPopupContent>
-												</CustomPopupSection>
-												<CustomPopupSection>
-													<CustomPopupTitle>촬영 연도</CustomPopupTitle>
-													<CustomPopupContent>
-														{item.productionYear}
-													</CustomPopupContent>
-												</CustomPopupSection>
-											</CustomPopupBody>
-										</div>
+										<CustomInfoWindow
+											key={index}
+											place={item}
+											onClose={() => setActivePlaces([])}
+										/>
 									))}
 								</Carousel>
 								<img

@@ -1,4 +1,4 @@
-// src/components/LocationMap/PlaceSearch.jsx
+// frontend/src/components/LocationMap/PlaceSearch.jsx
 import { Box, TextField } from "@mui/material";
 
 const PlaceSearch = ({ searchTerm, setSearchTerm }) => {

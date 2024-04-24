@@ -1,3 +1,4 @@
+// frontend/src/components/LocationMap/useKakaoLoader.jsx
 import { useKakaoLoader as useKakaoLoaderOrigin } from "react-kakao-maps-sdk";
 
 export default function useKakaoLoader() {

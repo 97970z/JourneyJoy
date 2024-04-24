@@ -1,4 +1,4 @@
-// frontend/src/pages/styles/useStyles.js
+// frontend/src/pages/styles/HomeStyles.jsx
 import { styled } from "@mui/system";
 
 export const HomeContainer = styled("div")({
