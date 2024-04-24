@@ -1,13 +1,37 @@
 // backend/routes/placeRoutes.js
 import { Router } from "express";
+import axios from "axios";
+import { xml2js } from "xml-js";
 import { v2 as cloudinary } from "cloudinary";
 import Place from "../models/Place.js";
 import User from "../models/User.js";
 import parser from "../config/cloudinaryConfig.js";
 import authenticateToken from "../middleware/authenticateToken.js";
 import adminCheck from "../middleware/adminCheck.js";
+import { seoulDataApiKey, openApiServiceKey } from "../config/envConfig.js";
 
 const router = Router();
+
+let cachedFestivalData = [];
+let cachedExternalPlaces = [];
+
+// 공공데이터(영화 촬영 장소) 가져오기
+router.get("/external-places", (req, res) => {
+  if (cachedExternalPlaces.length === 0) {
+    return res
+      .status(404)
+      .json({ message: "No external places data available" });
+  }
+  res.json(cachedExternalPlaces);
+});
+
+// 공공데이터(축제 데이터) 가져오기
+router.get("/festivals", (req, res) => {
+  if (cachedFestivalData.length === 0) {
+    return res.status(404).json({ message: "No festival data available" });
+  }
+  res.json(cachedFestivalData);
+});
 
 // 장소 추가
 router.post(
@@ -177,5 +201,63 @@ router.put("/:id/status", authenticateToken, adminCheck, async (req, res) => {
     res.status(500).send("Server error");
   }
 });
+
+const fetchExternalPlacesData = async () => {
+  try {
+    const response = await axios.get(
+      "https://apis.data.go.kr/B551010/locfilming/locfilmingList",
+      {
+        params: {
+          serviceKey: openApiServiceKey,
+          pageNo: 1,
+          numOfRows: 20000,
+        },
+      }
+    );
+    const result = xml2js(response.data, { compact: true, spaces: 4 });
+    let items = result.response?.item ?? [];
+    if (!Array.isArray(items)) items = [items];
+
+    cachedExternalPlaces = items.map((item) => ({
+      id: item.filmingSeq._text,
+      movieTitle: item.movieTitle._text,
+      filmingLocation: item.filmingLocation._text,
+      productionYear: item.productionYear?._text ?? "N/A",
+      sceneDesc: item.sceneDesc?._text ?? "",
+      sido: item.sido._text,
+      lat: parseFloat(item.latitude._text),
+      lng: parseFloat(item.longitude._text),
+    }));
+  } catch (error) {
+    console.error("Failed to fetch external places:", error);
+  }
+};
+
+async function fetchFestivalData() {
+  try {
+    let festivals = [];
+    const KEY = seoulDataApiKey;
+    for (let i = 0; i < 5; i++) {
+      const start = 1 + 1000 * i;
+      const end = 1000 * (i + 1);
+      const response = await axios.get(
+        `http://openapi.seoul.go.kr:8088/${KEY}/json/culturalEventInfo/${start}/${end}`
+      );
+      festivals = festivals.concat(response.data.culturalEventInfo.row);
+    }
+
+    cachedFestivalData = festivals;
+  } catch (error) {
+    console.error("Failed to fetch festival data:", error);
+  }
+}
+
+setInterval(async () => {
+  await fetchExternalPlacesData();
+  await fetchFestivalData();
+}, 86400000);
+
+fetchExternalPlacesData();
+fetchFestivalData();
 
 export default router;

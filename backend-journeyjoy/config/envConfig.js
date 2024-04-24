@@ -10,3 +10,5 @@ export const cloudinaryConfig = {
   api_key: process.env.API_KEY,
   api_secret: process.env.API_SECRET,
 };
+export const seoulDataApiKey = process.env.SEOUL_DATA_API_KEY;
+export const openApiServiceKey = process.env.OPEN_API_SERVICE_KEY;
