@@ -12,8 +12,34 @@ import { mongoURI, PORT } from "./config/envConfig.js";
 
 const app = express();
 
-app.use(helmet()); // 보안 헤더 설정
-app.use(cors()); // CORS 미들웨어 추가
+const corsOptions = {
+  origin: ["http://localhost:5173", "http://13.124.172.212"],
+  optionsSuccessStatus: 200,
+};
+
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"], // 기본 설정
+      scriptSrc: [
+        "'self'",
+        "https://dapi.kakao.com",
+        "https://t1.daumcdn.net",
+        "'unsafe-eval'",
+      ],
+      imgSrc: [
+        "'self'",
+        "https://res.cloudinary.com",
+        "https://t1.daumcdn.net",
+        "data:",
+        "*",
+        "blob:",
+      ],
+      connectSrc: ["'self'", "https://dapi.kakao.com"],
+    },
+  })
+);
+app.use(cors(corsOptions)); // CORS 미들웨어 추가
 app.use(express.json()); // JSON 요청 본문 파싱
 app.use(
   rateLimit({
@@ -35,4 +61,11 @@ app.use("/api/admin", adminRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
+});
+
+const path = "../frontend-journeyjoy/dist";
+
+app.use(express.static(path));
+app.get("/", (req, res) => {
+  res.sendFile(path + "/index.html");
 });
