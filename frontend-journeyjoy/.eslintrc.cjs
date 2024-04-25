@@ -15,7 +15,10 @@ module.exports = {
 		"react/prop-types": "off",
 		"react/react-in-jsx-scope": "off",
 		"react/jsx-uses-react": "off",
+		"react/jsx-uses-vars": "off",
+		"react-hooks/exhaustive-deps": "off",
+		"eslint-disable-next-line": "off",
+		"no-undef": "off",
 		"no-unused-vars": "off",
-		"react/display-name": "off",
 	},
 };

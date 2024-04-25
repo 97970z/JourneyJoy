@@ -4,17 +4,18 @@ import {
 	Box,
 	IconButton,
 	Typography,
-	Chip,
 	AppBar,
 	Toolbar,
-	Paper,
+	Accordion,
+	AccordionSummary,
 } from "@mui/material";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import HomeIcon from "@mui/icons-material/Home";
 import { usePlaces } from "../contextAPI/PlacesContext";
-import PlaceFilter from "../components/LocationMap/PlaceFilter";
 import PlaceMap from "../components/LocationMap/PlaceMap";
 import PlaceSearch from "../components/LocationMap/PlaceSearch";
+import PlaceFilter_Region from "../components/LocationMap/PlaceFilter_Region";
+import PlaceFilter_Festa from "../components/LocationMap/PlaceFilter_Festa";
 import regionCoordinates from "../constants/RegionCoordinates";
 
 function LocationMap() {
@@ -30,8 +31,9 @@ function LocationMap() {
 	const [filteredPlaces, setFilteredPlaces] = useState([]);
 	const [center, setCenter] = useState(regionCoordinates.None);
 	const [codenames, setCodenames] = useState([]);
-	const [selectedCodename, setSelectedCodename] = useState("");
-	const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+	const [selectedCodename, setSelectedCodename] = useState("None");
+	const [filteredFestaPlaces, setFilteredFestaPlaces] = useState([]);
+	const [isAccordionOpen, setIsAccordionOpen] = useState(false);
 
 	useEffect(() => {
 		initializePlaces();
@@ -66,9 +68,27 @@ function LocationMap() {
 			setCenter(regionCoordinates[selectedSido]);
 		}
 		filterPlaces();
-	}, [searchTerm, selectedSido, apiPlaces]);
+	}, [searchTerm, selectedSido, selectedCodename, apiPlaces, festaPlaces]);
 
 	const filterPlaces = () => {
+		if (selectedSido !== "None") {
+			setFilteredPlaces(
+				apiPlaces.filter(
+					(place) => selectedSido === "All" || place.sido === selectedSido,
+				),
+			);
+		} else {
+			setFilteredPlaces([]);
+		}
+
+		if (selectedCodename !== "None") {
+			setFilteredFestaPlaces(
+				festaPlaces.filter((place) => place.CODENAME === selectedCodename),
+			);
+		} else {
+			setFilteredFestaPlaces([]);
+		}
+
 		if (searchTerm) applySearch();
 		else if (selectedSido !== "None") applyFilter();
 		else setFilteredPlaces([]);
@@ -93,58 +113,96 @@ function LocationMap() {
 		);
 	};
 
-	const handleDrawerToggle = (open) => () => setIsDrawerOpen(open);
+	const handleSelectSido = (sido) => {
+		setSelectedSido(sido);
+		setSelectedCodename("None");
+		setFilteredFestaPlaces([]);
+		setIsAccordionOpen(false);
+	};
+
+	const handleSelectCodename = (codename) => {
+		setSelectedCodename(codename);
+		setFilteredFestaPlaces(
+			festaPlaces.filter((place) => place.CODENAME === codename),
+		);
+		setSelectedSido("None");
+		setFilteredPlaces([]);
+		setIsAccordionOpen(false);
+	};
+
+	const handleAccordionToggle = () => () =>
+		setIsAccordionOpen(!isAccordionOpen);
 
 	return (
-		<Box sx={{ height: "100vh", width: "100%" }}>
-			<AppBar position="static" color="default" elevation={1}>
-				<Toolbar sx={{ justifyContent: "space-between", padding: 1 }}>
-					<Box sx={{ display: "flex", alignItems: "center", minWidth: 200 }}>
-						<IconButton onClick={handleDrawerToggle(true)} color="primary">
-							<FilterListIcon />
-							<Typography variant="subtitle1" sx={{ ml: 1 }}>
-								필터
-							</Typography>
-						</IconButton>
-						<IconButton onClick={locateUser} color="primary">
-							<HomeIcon />
-							<Typography variant="subtitle1" sx={{ ml: 1 }}>
-								내 위치
-							</Typography>
-						</IconButton>
-					</Box>
-					<PlaceSearch searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-				</Toolbar>
-				<Paper
-					sx={{
-						px: 2,
-						py: 1,
-						display: "flex",
-						justifyContent: "center",
-						flexWrap: "wrap",
-						gap: 1,
-					}}
-				>
-					{codenames.map((codename) => (
-						<Chip
-							key={codename}
-							label={codename}
-							onClick={() => setSelectedCodename(codename)}
-							variant={selectedCodename === codename ? "filled" : "outlined"}
-							color={selectedCodename === codename ? "success" : "primary"}
+		<Box
+			sx={{
+				position: "relative",
+				height: "100%",
+				width: "100%",
+				gap: 1,
+				display: "flex",
+				flexDirection: "column",
+			}}
+		>
+			<AppBar position="static" color="default" elevation={1} enableColorOnDark>
+				<Accordion expanded={isAccordionOpen} onChange={handleAccordionToggle}>
+					<Toolbar sx={{ justifyContent: "space-between", padding: 1 }}>
+						<Box sx={{ display: "flex", alignItems: "center", minWidth: 200 }}>
+							<AccordionSummary>
+								<IconButton
+									onClick={handleAccordionToggle(true)}
+									color="primary"
+								>
+									<FilterListIcon />
+									<Typography variant="subtitle1" sx={{ ml: 1 }}>
+										필터
+									</Typography>
+								</IconButton>
+							</AccordionSummary>
+							<IconButton onClick={locateUser} color="primary">
+								<HomeIcon />
+								<Typography variant="subtitle1" sx={{ ml: 1 }}>
+									내 위치
+								</Typography>
+							</IconButton>
+						</Box>
+						<PlaceSearch
+							searchTerm={searchTerm}
+							setSearchTerm={setSearchTerm}
 						/>
-					))}
-				</Paper>
+					</Toolbar>
+					<Typography
+						variant="subtitle1"
+						sx={{
+							px: 2,
+							display: "flex",
+							justifyContent: "center",
+						}}
+					>
+						지역 필터
+					</Typography>
+					<PlaceFilter_Region
+						sidos={sidos}
+						selectedSido={selectedSido}
+						setSelectedSido={handleSelectSido}
+					/>
+					<hr />
+					<Typography
+						variant="subtitle1"
+						sx={{ px: 2, display: "flex", justifyContent: "center" }}
+					>
+						서울 축제 필터
+					</Typography>
+					<PlaceFilter_Festa
+						codenames={codenames}
+						selectedCodename={selectedCodename}
+						setSelectedCodename={handleSelectCodename}
+					/>
+				</Accordion>
 			</AppBar>
-			<Box sx={{ flex: 1, overflow: "auto" }}>
-				<PlaceMap places={filteredPlaces} center={center} />
-			</Box>
-			<PlaceFilter
-				isOpen={isDrawerOpen}
-				toggleDrawer={handleDrawerToggle}
-				sidos={sidos}
-				selectedSido={selectedSido}
-				setSelectedSido={setSelectedSido}
+			<PlaceMap
+				places={[...filteredFestaPlaces, ...filteredPlaces]}
+				center={center}
 			/>
 		</Box>
 	);

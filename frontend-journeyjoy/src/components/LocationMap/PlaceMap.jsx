@@ -8,16 +8,15 @@ import {
 	ZoomControl,
 } from "react-kakao-maps-sdk";
 import useKakaoLoader from "./useKakaoLoader";
-import Carousel from "react-material-ui-carousel";
+import { Tabs, Tab, Box } from "@mui/material";
 import CustomInfoWindow from "./CustomInfoWindow";
+import FestivalInfoWindow from "./FestivalInfoWindow";
 
 const PlaceMap = ({ places, center }) => {
 	useKakaoLoader();
 	const [activePlaces, setActivePlaces] = useState([]);
-	const [markerClickCenter, setMarkerClickCenter] = useState({
-		lat: 37.5665,
-		lng: 126.978,
-	});
+	const [selectedTab, setSelectedTab] = useState(0);
+	const [markerClickCenter, setMarkerClickCenter] = useState(center);
 	const mapRef = useRef(null);
 
 	useEffect(() => {
@@ -29,88 +28,109 @@ const PlaceMap = ({ places, center }) => {
 	}, [center]);
 
 	const handleMarkerClick = (clickedPlace) => {
-		setMarkerClickCenter({ lat: clickedPlace.lat, lng: clickedPlace.lng });
+		const latitude = clickedPlace.LOT || clickedPlace.lat;
+		const longitude = clickedPlace.LAT || clickedPlace.lng;
+
+		setMarkerClickCenter({ lat: latitude, lng: longitude });
 
 		const similarPlaces = places.filter(
 			(place) =>
-				place.lat === clickedPlace.lat && place.lng === clickedPlace.lng,
+				(place.LOT || place.lat) === latitude &&
+				(place.LAT || place.lng) === longitude,
 		);
 		setActivePlaces(similarPlaces);
+		setSelectedTab(0);
+	};
+
+	const handleChange = (event, newValue) => {
+		setSelectedTab(newValue);
 	};
 
 	return (
 		<Map
 			center={markerClickCenter}
-			style={{ width: "100%", height: "70vh" }}
+			style={{ width: "100%", height: "80vh" }}
 			level={10}
 			onCreate={(map) => (mapRef.current = map)}
 		>
 			<MapTypeControl position={"TOPRIGHT"} />
 			<ZoomControl position={"RIGHT"} />
 			<MarkerClusterer averageCenter={true} minLevel={5}>
-				{places.map((place) => (
-					<MapMarker
-						key={place.id}
-						position={{ lat: place.lat, lng: place.lng }}
-						clickable={true}
-						image={{
-							src: "https://res.cloudinary.com/dl6f9clxo/image/upload/v1711023540/journeyjoy/rc5rmev7gsotxieckjp9.svg",
-							size: { width: 30, height: 30 },
-						}}
-						onClick={() => handleMarkerClick(place)}
-					>
-						{activePlaces.some(
-							(activePlace) => activePlace.id === place.id,
-						) && (
-							<div
-								style={{
-									minWidth: "250px",
-									maxWidth: "300px",
-									position: "absolute",
-									top: "-10px",
-									backgroundColor: "#fff",
-									borderRadius: "10px",
-									boxShadow: "0 2px 6px rgba(0,0,0,0.3)",
-									overflow: "auto",
-								}}
-							>
-								<Carousel
-									autoPlay={false}
-									animation="slide"
-									navButtonsWrapperProps={{
-										style: {
-											top: "50%",
-											transform: "translateY(-50%)",
-										},
-									}}
-								>
-									{activePlaces.map((item, index) => (
-										<CustomInfoWindow
-											key={index}
-											place={item}
-											onClose={() => setActivePlaces([])}
-										/>
-									))}
-								</Carousel>
-								<img
-									alt="close"
-									width="14"
-									height="13"
-									src="https://t1.daumcdn.net/localimg/localimages/07/mapjsapi/2x/bt_close.gif"
-									style={{
-										position: "absolute",
-										right: "5px",
-										top: "5px",
-										cursor: "pointer",
-										zIndex: 1,
-									}}
-									onClick={() => setActivePlaces([])}
-								/>
-							</div>
-						)}
-					</MapMarker>
-				))}
+				{places
+					.filter(
+						(place) =>
+							place.CODENAME ||
+							(place.sceneDesc && place.sceneDesc.trim() !== ""),
+					)
+					.map((place, index) => (
+						<MapMarker
+							key={index}
+							position={{
+								lat: place.LOT || place.lat,
+								lng: place.LAT || place.lng,
+							}}
+							clickable={true}
+							image={{
+								src: "https://res.cloudinary.com/dl6f9clxo/image/upload/v1711023540/journeyjoy/rc5rmev7gsotxieckjp9.svg",
+								size: { width: 30, height: 30 },
+							}}
+							onClick={() => handleMarkerClick(place)}
+						/>
+					))}
 			</MarkerClusterer>
+			{activePlaces.length > 0 && (
+				<Box
+					sx={{
+						position: "absolute",
+						bottom: 10,
+						left: 10,
+						width: "50%",
+						padding: 1,
+						backgroundColor: "white",
+						borderRadius: 1,
+						zIndex: 1,
+						overflow: "auto",
+					}}
+				>
+					<Tabs
+						value={selectedTab}
+						onChange={handleChange}
+						aria-label="Location details"
+						variant="scrollable"
+						scrollButtons="auto"
+					>
+						{activePlaces.map((place, index) => (
+							<Tab
+								label={place.TITLE ? place.TITLE : place.movieTitle}
+								key={index}
+							/>
+						))}
+					</Tabs>
+					{activePlaces.map((place, index) => (
+						<div role="tabpanel" hidden={selectedTab !== index} key={index}>
+							{place.CODENAME ? (
+								<FestivalInfoWindow festival={place} />
+							) : (
+								<CustomInfoWindow place={place} />
+							)}
+						</div>
+					))}
+					<img
+						alt="close"
+						width="20"
+						height="20"
+						src="https://t1.daumcdn.net/localimg/localimages/07/mapjsapi/2x/bt_close.gif"
+						style={{
+							position: "absolute",
+							right: "0px",
+							top: "0px",
+							cursor: "pointer",
+							zIndex: 1,
+						}}
+						onClick={() => setActivePlaces([])}
+					/>
+				</Box>
+			)}
 		</Map>
 	);
 };
