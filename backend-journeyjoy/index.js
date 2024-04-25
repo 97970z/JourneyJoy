@@ -58,11 +58,3 @@ app.use("/api/admin", adminRoutes);
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
-
-const path = "../frontend-journeyjoy/dist";
-
-app.use(express.static(path));
-
-app.get("/", (req, res) => {
-  res.sendFile(path + "/index.html");
-});

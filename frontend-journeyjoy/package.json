@@ -38,5 +38,9 @@
 		"prettier": "^3.2.5",
 		"vite": "^5.1.7"
 	},
-	"proxy": "https://journeyjoy.o-r.kr:5000"
+	"proxy": {
+		"/api": {
+			"target": "http://journeyjoy.o-r.kr:5000"
+		}
+	}
 }

@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const Api = axios.create({
-	baseURL: "https://journeyjoy.o-r.kr:5000/api",
+	baseURL: "http://journeyjoy.o-r.kr:5000/api",
 });
 
 Api.interceptors.request.use(
