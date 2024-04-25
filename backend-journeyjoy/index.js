@@ -12,11 +12,6 @@ import { mongoURI, PORT } from "./config/envConfig.js";
 
 const app = express();
 
-const corsOptions = {
-  origin: ["http://localhost:5173", "http://13.124.172.212"],
-  optionsSuccessStatus: 200,
-};
-
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
@@ -39,7 +34,8 @@ app.use(
     },
   })
 );
-app.use(cors(corsOptions)); // CORS 미들웨어 추가
+// app.use(helmet());
+app.use(cors()); // CORS 미들웨어 추가
 app.use(express.json()); // JSON 요청 본문 파싱
 app.use(
   rateLimit({
@@ -66,6 +62,7 @@ app.listen(PORT, () => {
 const path = "../frontend-journeyjoy/dist";
 
 app.use(express.static(path));
+
 app.get("/", (req, res) => {
   res.sendFile(path + "/index.html");
 });
