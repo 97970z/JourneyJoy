@@ -55,7 +55,7 @@ const PlaceMap = ({ places, center }) => {
 		>
 			<MapTypeControl position={"TOPRIGHT"} />
 			<ZoomControl position={"RIGHT"} />
-			<MarkerClusterer averageCenter={true} minLevel={5}>
+			<MarkerClusterer averageCenter={true} minLevel={6}>
 				{places
 					.filter(
 						(place) =>
@@ -71,7 +71,9 @@ const PlaceMap = ({ places, center }) => {
 							}}
 							clickable={true}
 							image={{
-								src: "https://res.cloudinary.com/dl6f9clxo/image/upload/v1711023540/journeyjoy/rc5rmev7gsotxieckjp9.svg",
+								src: place.lat
+									? "https://res.cloudinary.com/dl6f9clxo/image/upload/v1714042563/journeyjoy/fvr0adrlhcur7wwpaw1e.png"
+									: "https://res.cloudinary.com/dl6f9clxo/image/upload/v1714042433/journeyjoy/icuhyp81qygkbeu2dwj7.png",
 								size: { width: 30, height: 30 },
 							}}
 							onClick={() => handleMarkerClick(place)}
