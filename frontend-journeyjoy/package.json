@@ -40,7 +40,7 @@
 	},
 	"proxy": {
 		"/api": {
-			"target": "http://journeyjoy.o-r.kr:5000"
+			"target": "https://journeyjoy.o-r.kr"
 		}
 	}
 }
