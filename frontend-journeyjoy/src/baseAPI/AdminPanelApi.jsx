@@ -1,4 +1,4 @@
-// src/baseAPI/AdminPanelApi.jsx
+// frontend/src/baseAPI/AdminPanelApi.jsx
 import Api from "./Api";
 
 export const fetchAllPlaces = async (page, limit) => {

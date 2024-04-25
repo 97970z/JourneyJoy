@@ -8,15 +8,23 @@ import adminCheck from "../middleware/adminCheck.js";
 const router = Router();
 
 // 사용자 목록 조회
-router.get("/", async (req, res) => {
-  const { page = 1, limit = 10 } = req.query;
+router.get("/", authenticateToken, adminCheck, async (req, res) => {
+  const { _page = 1, _limit = 5 } = req.query;
   try {
     const users = await User.find()
-      .skip((page - 1) * limit)
-      .limit(parseInt(limit));
+      .skip((_page - 1) * parseInt(_limit))
+      .limit(parseInt(_limit));
     const total = await User.countDocuments();
-    res.json({ data: users, total });
+    const totalPages = Math.ceil(total / parseInt(_limit));
+    res.json({
+      data: users,
+      total,
+      totalPages,
+      page: parseInt(_page),
+      limit: parseInt(_limit),
+    });
   } catch (error) {
+    console.error(error);
     res.status(500).send("Server error");
   }
 });

@@ -26,28 +26,27 @@ const AdminPanel = () => {
 	const [users, setUsers] = useState([]);
 	const [currentPagePlaces, setCurrentPagePlaces] = useState(1);
 	const [currentPageUsers, setCurrentPageUsers] = useState(1);
-	const itemsPerPage = 10;
+	const [totalPlacesPages, setTotalPlacesPages] = useState(0);
+	const [totalUsersPages, setTotalUsersPages] = useState(0);
+	const itemsPerPage = 5;
 
 	useEffect(() => {
 		if (currentUser.role === "admin") {
 			loadPlaces();
-		}
-	}, [currentUser, currentPagePlaces]);
-
-	useEffect(() => {
-		if (currentUser.role === "admin") {
 			loadUsers();
 		}
-	}, [currentUser, currentPageUsers]);
+	}, [currentUser, currentPagePlaces, currentPageUsers]);
 
 	const loadPlaces = async () => {
 		const response = await fetchAllPlaces(currentPagePlaces, itemsPerPage);
 		setPlaces(response.data);
+		setTotalPlacesPages(response.totalPages);
 	};
 
 	const loadUsers = async () => {
 		const response = await fetchUsers(currentPageUsers, itemsPerPage);
 		setUsers(response.data);
+		setTotalUsersPages(response.totalPages);
 	};
 
 	const handleUpdatePlaceStatus = async (id, status) => {
@@ -74,9 +73,6 @@ const AdminPanel = () => {
 	const handlePageChangeUsers = (event, value) => {
 		setCurrentPageUsers(value);
 	};
-
-	const totalPlacesPages = Math.ceil(places.length / itemsPerPage);
-	const totalUsersPages = Math.ceil(users.length / itemsPerPage);
 
 	return (
 		<div>
