@@ -2,17 +2,16 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
+	Typography,
+	Breadcrumbs,
 	AppBar,
 	Toolbar,
-	Typography,
 	Button,
 	Box,
-	IconButton,
-	Menu,
-	MenuItem,
 } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
 import { styled } from "@mui/system";
+import HomeIcon from "@mui/icons-material/Home";
+import MapIcon from "@mui/icons-material/Map";
 import LogoutIcon from "@mui/icons-material/Logout";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import AddLocationModal from "../Home/AddLocationModal";
@@ -28,8 +27,6 @@ function Navbar() {
 	const navigate = useNavigate();
 	const { currentUser, logout } = useAuth();
 	const [modalOpen, setModalOpen] = useState(false);
-	const [anchorEl, setAnchorEl] = useState(null);
-	const open = Boolean(anchorEl);
 
 	const handleLogout = () => {
 		logout();
@@ -44,53 +41,40 @@ function Navbar() {
 		setModalOpen(false);
 	};
 
-	const handleClick = (event) => {
-		setAnchorEl(event.currentTarget);
-	};
-
-	const handleClose = () => {
-		setAnchorEl(null);
-	};
-
 	return (
 		<StyledAppBar position="static">
-			<Toolbar>
-				<IconButton
-					size="large"
-					edge="start"
-					color="inherit"
-					aria-label="menu"
-					sx={{ mr: 2 }}
-					onClick={handleClick}
-				>
-					<MenuIcon />
-				</IconButton>
-				<Menu
-					id="basic-menu"
-					anchorEl={anchorEl}
-					open={open}
-					onClose={handleClose}
-					MenuListProps={{
-						"aria-labelledby": "basic-button",
-					}}
-				>
-					<MenuItem onClick={handleClose} component={Link} to="/">
-						Home
-					</MenuItem>
-					<MenuItem onClick={handleClose} component={Link} to="/allplaces">
-						All Locations
-					</MenuItem>
-					{currentUser && currentUser.role === "admin" && (
-						<MenuItem onClick={handleClose} component={Link} to="/adminpanel">
-							Admin Panel
-						</MenuItem>
-					)}
-				</Menu>
-				<Typography variant="h6" sx={{ flexGrow: 1, fontWeight: "bold" }}>
-					<Link to="/" style={{ textDecoration: "none", color: "white" }}>
-						JourneyJoy
+			<Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+				<Breadcrumbs aria-label="breadcrumb">
+					<Link to="/" style={{ textDecoration: "none" }}>
+						<Typography
+							style={{ display: "flex", alignItems: "center" }}
+							color="text.primary"
+						>
+							<HomeIcon sx={{ mr: 0.5 }} fontSize="inherit" />
+							Home
+						</Typography>
 					</Link>
-				</Typography>
+					<Link to="/allplaces" style={{ textDecoration: "none" }}>
+						<Typography
+							style={{ display: "flex", alignItems: "center" }}
+							color="text.primary"
+						>
+							<MapIcon sx={{ mr: 0.5 }} fontSize="inherit" />
+							All Places
+						</Typography>
+					</Link>
+					{currentUser && currentUser.role === "admin" && (
+						<Link to="/adminpanel" style={{ textDecoration: "none" }}>
+							<Typography
+								style={{ display: "flex", alignItems: "center" }}
+								color="text.primary"
+							>
+								<MapIcon sx={{ mr: 0.5 }} fontSize="inherit" />
+								Admin Panel
+							</Typography>
+						</Link>
+					)}
+				</Breadcrumbs>
 				{!currentUser ? (
 					<Box>
 						<Button
@@ -110,10 +94,10 @@ function Navbar() {
 							startIcon={<AddCircleOutlineIcon />}
 							onClick={handleModalOpen}
 							sx={{
-								color: "white",
+								fontSize: "1rem",
+								color: "black",
 								marginRight: 2,
-								border: "1px solid white",
-								borderRadius: "5px",
+								marginTop: 0.5,
 								":hover": {
 									backgroundColor: "white",
 									color: "coral",
@@ -124,20 +108,31 @@ function Navbar() {
 							장소 추가
 						</Button>
 						<Button
-							startIcon={<LogoutIcon />}
-							onClick={handleLogout}
-							sx={{ color: "white" }}
+							sx={{
+								borderRadius: "5px",
+								":hover": {
+									backgroundColor: "white",
+								},
+							}}
 						>
-							Logout
+							<Typography
+								onClick={handleLogout}
+								style={{ display: "flex", alignItems: "center" }}
+								color="text.primary"
+							>
+								<LogoutIcon sx={{ mr: 0.5 }} fontSize="inherit" />
+								LOGOUT
+							</Typography>
 						</Button>
 					</Box>
 				)}
+
+				<AddLocationModal
+					open={modalOpen}
+					handleClose={handleModalClose}
+					username={currentUser?.username}
+				/>
 			</Toolbar>
-			<AddLocationModal
-				open={modalOpen}
-				handleClose={handleModalClose}
-				username={currentUser?.username}
-			/>
 		</StyledAppBar>
 	);
 }
