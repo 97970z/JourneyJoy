@@ -237,15 +237,25 @@ async function fetchFestivalData() {
   try {
     let festivals = [];
     const KEY = seoulDataApiKey;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
     for (let i = 0; i < 5; i++) {
       const start = 1 + 1000 * i;
       const end = 1000 * (i + 1);
       const response = await axios.get(
         `http://openapi.seoul.go.kr:8088/${KEY}/json/culturalEventInfo/${start}/${end}`
       );
-      festivals = festivals.concat(response.data.culturalEventInfo.row);
-    }
+      const fetchedFestivals = response.data.culturalEventInfo.row;
 
+      const validFestivals = fetchedFestivals.filter((festival) => {
+        const dateRange = festival.DATE.split("~");
+        const endDate = new Date(dateRange[1].trim());
+        return endDate >= today;
+      });
+
+      festivals = festivals.concat(validFestivals);
+    }
     cachedFestivalData = festivals;
   } catch (error) {
     console.error("Failed to fetch festival data:", error);
