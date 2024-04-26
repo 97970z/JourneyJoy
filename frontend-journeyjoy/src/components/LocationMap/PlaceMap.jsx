@@ -50,7 +50,7 @@ const PlaceMap = ({ places, center }) => {
 		<Map
 			center={markerClickCenter}
 			style={{ width: "100%", height: "80vh" }}
-			level={10}
+			level={8}
 			onCreate={(map) => (mapRef.current = map)}
 		>
 			<MapTypeControl position={"TOPRIGHT"} />

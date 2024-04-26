@@ -1,8 +1,8 @@
 // frontend/src/components/LocationDetail/LocationActionButtons.jsx
-import React from "react";
-import { Button } from "@mui/material";
+import { Button, Stack } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import SaveIcon from "@mui/icons-material/Save";
 
 const LocationActionButtons = ({
 	isEditing,
@@ -11,29 +11,37 @@ const LocationActionButtons = ({
 	handleSubmit,
 }) => {
 	return (
-		<div>
-			<Button
-				startIcon={<EditIcon />}
-				onClick={() => setIsEditing(!isEditing)}
-				variant="contained"
-				color="primary"
-			>
-				{isEditing ? "Cancel" : "Edit"}
-			</Button>
-			<Button
-				startIcon={<DeleteIcon />}
-				onClick={handleDelete}
-				variant="contained"
-				color="secondary"
-			>
-				Delete
-			</Button>
-			{isEditing && (
-				<Button onClick={handleSubmit} variant="contained" color="success">
-					Save Changes
+		<Stack direction="row" spacing={1} sx={{ marginTop: 2 }}>
+			{isEditing ? (
+				<>
+					<Button
+						startIcon={<SaveIcon />}
+						onClick={handleSubmit}
+						variant="contained"
+						color="success"
+					>
+						Save Changes
+					</Button>
+					<Button
+						startIcon={<DeleteIcon />}
+						onClick={handleDelete}
+						variant="outlined"
+						color="error"
+					>
+						Delete
+					</Button>
+				</>
+			) : (
+				<Button
+					startIcon={<EditIcon />}
+					onClick={() => setIsEditing(true)}
+					variant="contained"
+					color="primary"
+				>
+					Edit
 				</Button>
 			)}
-		</div>
+		</Stack>
 	);
 };
 

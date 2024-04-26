@@ -1,20 +1,26 @@
 // frontend/src/components/LocationDetail/LocationDetailDisplay.jsx
-import React from "react";
 import { Typography, Paper } from "@mui/material";
 
-const LocationDetailDisplay = ({ name, description }) => {
+const LocationDetailDisplay = ({ name, description, featuredIn, genre }) => {
 	return (
-		<>
-			<Typography variant="h4">{name}</Typography>
-			<Paper
-				elevation={3}
-				sx={{ padding: "20px", maxWidth: 800, width: "100%" }}
-			>
-				<Typography variant="body1" paragraph>
-					{description}
-				</Typography>
-			</Paper>
-		</>
+		<Paper
+			elevation={6}
+			sx={{ padding: 3, margin: 2, backgroundColor: "#f7f7f7" }}
+		>
+			<Typography variant="h4" gutterBottom component="div">
+				{name}
+			</Typography>
+			<hr />
+			<Typography variant="body1" paragraph>
+				{description}
+			</Typography>
+			<Typography variant="body2" color="textSecondary">
+				출연작: {featuredIn}
+			</Typography>
+			<Typography variant="body2" color="textSecondary">
+				장르: {genre}
+			</Typography>
+		</Paper>
 	);
 };
 

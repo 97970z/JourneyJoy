@@ -1,10 +1,14 @@
 // src/contextAPI/PlacesContext.jsx
 import { createContext, useContext, useState, useEffect } from "react";
 import Api from "../baseAPI/Api";
+import axios from "axios";
 
 const PlacesContext = createContext();
 
 export const usePlaces = () => useContext(PlacesContext);
+
+const KAKAO_API_KEY = import.meta.env.VITE_KAKAO_REST_API_KEY;
+const KAKAO_API_URL = "https://dapi.kakao.com/v2/local/search/address.json";
 
 export const PlacesProvider = ({ children }) => {
 	const [userPlaces, setUserPlaces] = useState([]);
@@ -26,6 +30,28 @@ export const PlacesProvider = ({ children }) => {
 			console.error("Failed to fetch places:", error);
 		} finally {
 			setIsLoading(false);
+		}
+	};
+
+	const getCoordinatesFromAddress = async (address) => {
+		try {
+			const response = await axios.get(KAKAO_API_URL, {
+				headers: {
+					Authorization: `KakaoAK ${KAKAO_API_KEY}`,
+				},
+				params: {
+					query: address,
+				},
+			});
+			const { documents } = response.data;
+			if (documents.length === 0) {
+				throw new Error("No location found for the provided address.");
+			}
+			const { x: lng, y: lat } = documents[0];
+			return { lat, lng };
+		} catch (error) {
+			console.error("Failed to get coordinates from address:", error);
+			return { lat: 0, lng: 0 };
 		}
 	};
 
@@ -98,6 +124,7 @@ export const PlacesProvider = ({ children }) => {
 				fetchPlaces,
 				fetchExternalPlaces,
 				fetchExternalPlaces_Festa,
+				getCoordinatesFromAddress,
 			}}
 		>
 			{children}

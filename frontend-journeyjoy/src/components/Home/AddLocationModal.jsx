@@ -1,4 +1,3 @@
-// frontend/src/components/HomeComponents/AddLocationButton.jsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -16,9 +15,10 @@ import {
 	Snackbar,
 	Alert,
 } from "@mui/material";
+import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import { usePlaces } from "../../contextAPI/PlacesContext";
 
-const MAX_FILE_SIZE = 1.5 * 1024 * 1024;
+const MAX_FILE_SIZE = 1.5 * 1024 * 1024; // 1.5 MB
 
 const AddLocationModal = ({ open, handleClose, username }) => {
 	const navigate = useNavigate();
@@ -31,7 +31,8 @@ const AddLocationModal = ({ open, handleClose, username }) => {
 		genre: "",
 		image: null,
 	});
-	const [fileError, setFileError] = useState(false);
+	const [fileError, setFileError] = useState("");
+	const [filePreview, setFilePreview] = useState(null);
 	const [openSnackbar, setOpenSnackbar] = useState(false);
 	const [snackbarMessage, setSnackbarMessage] = useState("");
 
@@ -47,6 +48,7 @@ const AddLocationModal = ({ open, handleClose, username }) => {
 		} else {
 			setFormData({ ...formData, image: file });
 			setFileError("");
+			setFilePreview(URL.createObjectURL(file));
 		}
 	};
 
@@ -59,7 +61,7 @@ const AddLocationModal = ({ open, handleClose, username }) => {
 			}
 		}
 		if (!formData.image) {
-			setSnackbarMessage("Please upload an image.");
+			setSnackbarMessage("이미지 파일을 업로드해주세요.");
 			setOpenSnackbar(true);
 			return false;
 		}
@@ -76,9 +78,9 @@ const AddLocationModal = ({ open, handleClose, username }) => {
 		locationData.append("addedBy", username);
 
 		try {
-			const submitID = await addPlace(locationData);
+			await addPlace(locationData);
 			handleClose();
-			navigate(`/locations/${submitID}`);
+			navigate("/");
 			setFormData({
 				name: "",
 				location: "",
@@ -87,6 +89,7 @@ const AddLocationModal = ({ open, handleClose, username }) => {
 				genre: "",
 				image: null,
 			});
+			setFilePreview(null);
 		} catch (error) {
 			console.error("Failed to add location:", error);
 		}
@@ -99,14 +102,23 @@ const AddLocationModal = ({ open, handleClose, username }) => {
 	return (
 		<>
 			<Dialog open={open} onClose={handleClose}>
-				<DialogTitle>Add a New Location</DialogTitle>
+				<DialogTitle>장소 추가</DialogTitle>
 				<DialogContent>
 					{fileError && <Alert severity="error">{fileError}</Alert>}
+					{filePreview && (
+						<Box sx={{ mb: 2, textAlign: "center" }}>
+							<img
+								src={filePreview}
+								alt="Preview"
+								style={{ maxWidth: "100%", maxHeight: "200px" }}
+							/>
+						</Box>
+					)}
 					<TextField
 						autoFocus
 						margin="dense"
 						name="name"
-						label="Name"
+						label="제목"
 						type="text"
 						fullWidth
 						variant="outlined"
@@ -117,7 +129,7 @@ const AddLocationModal = ({ open, handleClose, username }) => {
 					<TextField
 						margin="dense"
 						name="location"
-						label="Location"
+						label="위치 (주소)"
 						type="text"
 						fullWidth
 						variant="outlined"
@@ -128,7 +140,7 @@ const AddLocationModal = ({ open, handleClose, username }) => {
 					<TextField
 						margin="dense"
 						name="description"
-						label="Description"
+						label="장면 설명"
 						fullWidth
 						variant="outlined"
 						multiline
@@ -140,7 +152,7 @@ const AddLocationModal = ({ open, handleClose, username }) => {
 					<TextField
 						margin="dense"
 						name="featuredIn"
-						label="Featured In"
+						label="출연 작품 (미디어의 제목)"
 						fullWidth
 						variant="outlined"
 						value={formData.featuredIn}
@@ -148,7 +160,7 @@ const AddLocationModal = ({ open, handleClose, username }) => {
 						required
 					/>
 					<FormControl fullWidth sx={{ mt: 2 }}>
-						<InputLabel id="genre-select-label">Genre</InputLabel>
+						<InputLabel id="genre-select-label">장르</InputLabel>
 						<Select
 							labelId="genre-select-label"
 							id="genre"
@@ -158,23 +170,23 @@ const AddLocationModal = ({ open, handleClose, username }) => {
 							onChange={handleChange}
 							required
 						>
-							<MenuItem value="Movie">Movie</MenuItem>
-							<MenuItem value="Drama">Drama</MenuItem>
-							<MenuItem value="Anime">Anime</MenuItem>
-							<MenuItem value="TV Show">TV Show</MenuItem>
+							<MenuItem value="Movie">영화</MenuItem>
+							<MenuItem value="Drama">드라마</MenuItem>
+							<MenuItem value="Anime">애니메이션</MenuItem>
+							<MenuItem value="TV Show">TV 프로그램</MenuItem>
 						</Select>
 					</FormControl>
 					<Box mt={2}>
 						<Button
 							variant="contained"
 							component="label"
+							startIcon={<PhotoCamera />}
 							sx={{
 								backgroundColor: "primary.main",
-								color: "white",
 								"&:hover": { backgroundColor: "primary.dark" },
 							}}
 						>
-							Upload Image
+							이미지 업로드
 							<input
 								type="file"
 								hidden
@@ -185,8 +197,8 @@ const AddLocationModal = ({ open, handleClose, username }) => {
 					</Box>
 				</DialogContent>
 				<DialogActions>
-					<Button onClick={handleClose}>Cancel</Button>
-					<Button onClick={handleSubmit}>Add Location</Button>
+					<Button onClick={handleClose}>취소하기</Button>
+					<Button onClick={handleSubmit}>추가하기</Button>
 				</DialogActions>
 			</Dialog>
 			<Snackbar
