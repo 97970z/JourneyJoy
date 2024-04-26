@@ -7,6 +7,7 @@ import {
 	CircularProgress,
 	Snackbar,
 	Alert,
+	Dialog,
 } from "@mui/material";
 import { Map, MapMarker } from "react-kakao-maps-sdk";
 import useKakaoLoader from "../components/LocationMap/useKakaoLoader";
@@ -40,6 +41,7 @@ const LocationDetail = () => {
 	});
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState("");
+	const [imageOpen, setImageOpen] = useState(false);
 
 	useEffect(() => {
 		const foundLocation = userPlaces.find((place) => place._id === id);
@@ -93,13 +95,33 @@ const LocationDetail = () => {
 		}
 	};
 
+	const handleImageClick = () => {
+		setImageOpen(true);
+	};
+
+	const handleCloseImage = () => {
+		setImageOpen(false);
+	};
+
 	if (isLoading) return <CircularProgress />;
 	if (!location)
 		return <Typography>{error || "Loading location details..."}</Typography>;
 
 	return (
 		<DetailPaper>
-			<ImageBanner src={location.imageUrl} alt={location.name} loading="lazy" />
+			<ImageBanner
+				src={location.imageUrl}
+				alt={location.name}
+				loading="lazy"
+				onClick={handleImageClick}
+			/>
+			<Dialog open={imageOpen} onClose={handleCloseImage}>
+				<img
+					src={location.imageUrl}
+					alt={location.name}
+					style={{ width: "100%" }}
+				/>
+			</Dialog>
 			{isEditing ? (
 				<LocationDetailForm formData={formData} handleChange={handleChange} />
 			) : (

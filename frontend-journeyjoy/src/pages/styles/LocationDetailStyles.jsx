@@ -8,7 +8,7 @@ export const DetailPaper = styled(Paper)(({ theme }) => ({
 }));
 
 export const ImageBanner = styled("img")({
-	width: "50%",
+	width: "30%",
 	objectFit: "cover",
 	margin: "auto",
 	display: "block",

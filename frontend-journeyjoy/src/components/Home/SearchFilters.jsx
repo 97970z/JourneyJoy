@@ -18,9 +18,9 @@ const SearchFilters = ({ selectedGenres, setSelectedGenres, allGenres }) => {
 					key={genre}
 					label={genre}
 					clickable
-					color={selectedGenres.includes(genre) ? "primary" : "default"}
+					color={selectedGenres.includes(genre) ? "success" : "primary"}
+					variant={selectedGenres.includes(genre) ? "filled" : "outlined"}
 					onClick={handleGenreChange(genre)}
-					variant="outlined"
 				/>
 			))}
 		</Stack>
