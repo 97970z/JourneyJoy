@@ -46,6 +46,7 @@ function LocationMap() {
 		setSidos(["None", "All", ...new Set(apiPlaces.map((item) => item.sido))]);
 		setCodenames([
 			"None",
+			"All",
 			...new Set(festaPlaces.map((place) => place.CODENAME)),
 		]);
 	};
@@ -83,7 +84,10 @@ function LocationMap() {
 
 		if (selectedCodename !== "None") {
 			setFilteredFestaPlaces(
-				festaPlaces.filter((place) => place.CODENAME === selectedCodename),
+				festaPlaces.filter(
+					(place) =>
+						selectedCodename === "All" || place.CODENAME === selectedCodename,
+				),
 			);
 		} else {
 			setFilteredFestaPlaces([]);
