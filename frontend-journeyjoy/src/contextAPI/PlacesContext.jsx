@@ -7,9 +7,6 @@ const PlacesContext = createContext();
 
 export const usePlaces = () => useContext(PlacesContext);
 
-const KAKAO_API_KEY = import.meta.env.VITE_KAKAO_REST_API_KEY;
-const KAKAO_API_URL = "https://dapi.kakao.com/v2/local/search/address.json";
-
 export const PlacesProvider = ({ children }) => {
 	const [userPlaces, setUserPlaces] = useState([]);
 	const [apiPlaces, setApiPlaces] = useState([]);
@@ -35,19 +32,22 @@ export const PlacesProvider = ({ children }) => {
 
 	const getCoordinatesFromAddress = async (address) => {
 		try {
-			const response = await axios.get(KAKAO_API_URL, {
-				headers: {
-					Authorization: `KakaoAK ${KAKAO_API_KEY}`,
+			const response = await axios.get(
+				"https://maps.googleapis.com/maps/api/geocode/json",
+				{
+					params: {
+						address: address,
+						key: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+					},
 				},
-				params: {
-					query: address,
-				},
-			});
-			const { documents } = response.data;
-			if (documents.length === 0) {
+			);
+
+			const { data } = response;
+			if (data.status !== "OK" || !data.results || data.results.length === 0) {
 				throw new Error("No location found for the provided address.");
 			}
-			const { x: lng, y: lat } = documents[0];
+
+			const { lat, lng } = data.results[0].geometry.location;
 			return { lat, lng };
 		} catch (error) {
 			console.error("Failed to get coordinates from address:", error);

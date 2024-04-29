@@ -9,8 +9,7 @@ import {
 	Alert,
 	Dialog,
 } from "@mui/material";
-import { Map, MapMarker } from "react-kakao-maps-sdk";
-import useKakaoLoader from "../components/LocationMap/useKakaoLoader";
+import { GoogleMap, useJsApiLoader } from "@react-google-maps/api";
 import { useAuth } from "../contextAPI/AuthContext";
 import { usePlaces } from "../contextAPI/PlacesContext";
 import LocationDetailDisplay from "../components/LocationDetail/LocationDetailDisplay";
@@ -22,8 +21,12 @@ import {
 	ActionContainer,
 } from "./styles/LocationDetailStyles";
 
+const containerStyle = {
+	width: "100%",
+	height: "400px",
+};
+
 const LocationDetail = () => {
-	useKakaoLoader();
 	const navigate = useNavigate();
 	const { id } = useParams();
 	const { currentUser } = useAuth();
@@ -42,6 +45,11 @@ const LocationDetail = () => {
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState("");
 	const [imageOpen, setImageOpen] = useState(false);
+	const { isLoaded } = useJsApiLoader({
+		id: "google-map-script",
+		googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+		language: "ko",
+	});
 
 	useEffect(() => {
 		const foundLocation = userPlaces.find((place) => place._id === id);
@@ -87,7 +95,6 @@ const LocationDetail = () => {
 			setIsEditing(false);
 			setLocation({ ...location, ...formData });
 			fetchCoordinates(formData.address);
-			setError("");
 		} catch (error) {
 			setError("Failed to update location. Please try again.");
 		} finally {
@@ -95,27 +102,19 @@ const LocationDetail = () => {
 		}
 	};
 
-	const handleImageClick = () => {
-		setImageOpen(true);
-	};
-
-	const handleCloseImage = () => {
-		setImageOpen(false);
-	};
-
 	if (isLoading) return <CircularProgress />;
 	if (!location)
 		return <Typography>{error || "Loading location details..."}</Typography>;
 
-	return (
+	return isLoaded ? (
 		<DetailPaper>
 			<ImageBanner
 				src={location.imageUrl}
 				alt={location.name}
 				loading="lazy"
-				onClick={handleImageClick}
+				onClick={() => setImageOpen(true)}
 			/>
-			<Dialog open={imageOpen} onClose={handleCloseImage}>
+			<Dialog open={imageOpen} onClose={() => setImageOpen(false)}>
 				<img
 					src={location.imageUrl}
 					alt={location.name}
@@ -128,14 +127,12 @@ const LocationDetail = () => {
 				<LocationDetailDisplay {...location} />
 			)}
 			<Box sx={{ width: "100%", height: "400px", mt: 2 }}>
-				<Map
+				<GoogleMap
+					mapContainerStyle={containerStyle}
 					center={coords}
-					style={{ width: "100%", height: "100%" }}
-					level={3}
-					zoomable={false}
-				>
-					<MapMarker position={coords}></MapMarker>
-				</Map>
+					zoom={15}
+					options={{ gestureHandling: "none", disableDefaultUI: true }}
+				></GoogleMap>
 			</Box>
 			{currentUser?.username === location.addedBy && (
 				<ActionContainer>
@@ -161,6 +158,8 @@ const LocationDetail = () => {
 				</Alert>
 			</Snackbar>
 		</DetailPaper>
+	) : (
+		<Typography>Loading map...</Typography>
 	);
 };
 
