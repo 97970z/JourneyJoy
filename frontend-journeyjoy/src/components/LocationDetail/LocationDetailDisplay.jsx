@@ -1,7 +1,13 @@
 // frontend/src/components/LocationDetail/LocationDetailDisplay.jsx
 import { Typography, Paper } from "@mui/material";
 
-const LocationDetailDisplay = ({ name, description, featuredIn, genre }) => {
+const LocationDetailDisplay = ({
+	name,
+	description,
+	featuredIn,
+	genre,
+	location,
+}) => {
 	return (
 		<Paper
 			elevation={6}
@@ -13,6 +19,9 @@ const LocationDetailDisplay = ({ name, description, featuredIn, genre }) => {
 			<hr />
 			<Typography variant="body1" paragraph>
 				{description}
+			</Typography>
+			<Typography variant="body2" color="textSecondary">
+				위치: {location}
 			</Typography>
 			<Typography variant="body2" color="textSecondary">
 				출연작: {featuredIn}
