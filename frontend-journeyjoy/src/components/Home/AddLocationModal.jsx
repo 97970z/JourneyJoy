@@ -18,7 +18,7 @@ import {
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import { usePlaces } from "../../contextAPI/PlacesContext";
 
-const MAX_FILE_SIZE = 1.5 * 1024 * 1024; // 1.5 MB
+const MAX_FILE_SIZE = 3 * 1024 * 1024; // 3 MB
 
 const AddLocationModal = ({ open, handleClose, username }) => {
 	const navigate = useNavigate();
@@ -43,7 +43,7 @@ const AddLocationModal = ({ open, handleClose, username }) => {
 	const handleFileChange = (e) => {
 		const file = e.target.files[0];
 		if (file && file.size > MAX_FILE_SIZE) {
-			setFileError("이미지 파일은 1.5MB 이하여야 합니다.");
+			setFileError("이미지 파일은 3MB 이하여야 합니다.");
 			e.target.value = null;
 		} else {
 			setFormData({ ...formData, image: file });

@@ -131,7 +131,11 @@ const LocationDetail = () => {
 					mapContainerStyle={containerStyle}
 					center={coords}
 					zoom={15}
-					options={{ gestureHandling: "none", disableDefaultUI: true }}
+					options={{
+						gestureHandling: "none",
+						disableDefaultUI: true,
+						zoomControl: true,
+					}}
 				></GoogleMap>
 			</Box>
 			{currentUser?.username === location.addedBy && (
