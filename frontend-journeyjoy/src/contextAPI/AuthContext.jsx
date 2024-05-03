@@ -55,8 +55,8 @@ export const AuthProvider = ({ children }) => {
 		setAuthTokens(data);
 	};
 
-	const register = async (username, password) => {
-		await Api.post("/auth/register", { username, password });
+	const register = async (username, password, email) => {
+		await Api.post("/auth/register", { username, password, email });
 	};
 
 	const logout = () => {

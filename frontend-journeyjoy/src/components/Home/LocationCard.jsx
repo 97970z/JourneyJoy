@@ -31,7 +31,7 @@ const LocationCard = ({ _id, imageUrl, name, featuredIn }) => {
 							{name}
 						</Typography>
 						<Typography variant="body2" color="common.white">
-							Featured in: {featuredIn}
+							출연작: {featuredIn}
 						</Typography>
 					</OverlayText>
 				</StyledCardMedia>
