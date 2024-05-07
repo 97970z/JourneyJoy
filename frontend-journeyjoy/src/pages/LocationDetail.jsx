@@ -92,48 +92,50 @@ const LocationDetail = () => {
 		);
 
 	return (
-		<DetailPaper>
-			<ImageBanner
-				src={location.imageUrl}
-				alt={location.name}
-				loading="lazy"
-				onClick={toggleImage}
-			/>
-			<Dialog open={isImageOpen} onClose={toggleImage}>
-				<img
+		isLoaded && (
+			<DetailPaper>
+				<ImageBanner
 					src={location.imageUrl}
 					alt={location.name}
-					style={{ width: "100%" }}
+					loading="lazy"
+					onClick={toggleImage}
 				/>
-			</Dialog>
-			{isEditing ? (
-				<LocationDetailForm formData={formData} handleChange={handleChange} />
-			) : (
-				<LocationDetailDisplay {...location} />
-			)}
-			<Box sx={{ width: "100%", height: "400px", mt: 2 }}>
-				<GoogleMap
-					mapContainerStyle={{ width: "100%", height: "400px" }}
-					center={coords}
-					zoom={15}
-					options={{
-						gestureHandling: "none",
-						disableDefaultUI: true,
-						zoomControl: true,
-					}}
-				></GoogleMap>
-			</Box>
-			{currentUser?.username === location.addedBy && (
-				<ActionContainer>
-					<LocationActionButtons
-						isEditing={isEditing}
-						setIsEditing={toggleEditing}
-						handleDelete={handleDelete}
-						handleSubmit={handleSubmit}
+				<Dialog open={isImageOpen} onClose={toggleImage}>
+					<img
+						src={location.imageUrl}
+						alt={location.name}
+						style={{ width: "100%" }}
 					/>
-				</ActionContainer>
-			)}
-		</DetailPaper>
+				</Dialog>
+				{isEditing ? (
+					<LocationDetailForm formData={formData} handleChange={handleChange} />
+				) : (
+					<LocationDetailDisplay {...location} />
+				)}
+				<Box sx={{ width: "100%", height: "400px", mt: 2 }}>
+					<GoogleMap
+						mapContainerStyle={{ width: "100%", height: "400px" }}
+						center={coords}
+						zoom={15}
+						options={{
+							gestureHandling: "none",
+							disableDefaultUI: true,
+							zoomControl: true,
+						}}
+					></GoogleMap>
+				</Box>
+				{currentUser?.username === location.addedBy && (
+					<ActionContainer>
+						<LocationActionButtons
+							isEditing={isEditing}
+							setIsEditing={toggleEditing}
+							handleDelete={handleDelete}
+							handleSubmit={handleSubmit}
+						/>
+					</ActionContainer>
+				)}
+			</DetailPaper>
+		)
 	);
 };
 
