@@ -35,8 +35,7 @@ export const AuthProvider = ({ children }) => {
 		if (refreshToken) {
 			try {
 				const { data } = await Api.post("/auth/refresh", { refreshToken });
-				localStorage.setItem("accessToken", data.accessToken);
-				fetchCurrentUser(data.accessToken);
+				setAuthTokens(data);
 			} catch (error) {
 				console.error("Error refreshing token", error);
 				logout();

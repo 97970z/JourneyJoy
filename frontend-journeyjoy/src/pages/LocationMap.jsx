@@ -12,6 +12,7 @@ import {
 import FilterListIcon from "@mui/icons-material/FilterList";
 import HomeIcon from "@mui/icons-material/Home";
 import { usePlaces } from "../contextAPI/PlacesContext";
+import { useToggleManagement } from "../contextAPI/ToggleManagementContext";
 import PlaceMap from "../components/LocationMap/PlaceMap";
 import PlaceSearch from "../components/LocationMap/PlaceSearch";
 import PlaceFilter_Region from "../components/LocationMap/PlaceFilter_Region";
@@ -19,6 +20,7 @@ import PlaceFilter_Festa from "../components/LocationMap/PlaceFilter_Festa";
 import regionCoordinates from "../constants/RegionCoordinates";
 
 function LocationMap() {
+	const { isAccordionOpen, toggleAccordion } = useToggleManagement();
 	const {
 		apiPlaces,
 		festaPlaces,
@@ -33,7 +35,6 @@ function LocationMap() {
 	const [codenames, setCodenames] = useState([]);
 	const [selectedCodename, setSelectedCodename] = useState("None");
 	const [filteredFestaPlaces, setFilteredFestaPlaces] = useState([]);
-	const [isAccordionOpen, setIsAccordionOpen] = useState(false);
 
 	useEffect(() => {
 		initializePlaces();
@@ -121,7 +122,6 @@ function LocationMap() {
 		setSelectedSido(sido);
 		setSelectedCodename("None");
 		setFilteredFestaPlaces([]);
-		setIsAccordionOpen(false);
 	};
 
 	const handleSelectCodename = (codename) => {
@@ -131,11 +131,7 @@ function LocationMap() {
 		);
 		setSelectedSido("None");
 		setFilteredPlaces([]);
-		setIsAccordionOpen(false);
 	};
-
-	const handleAccordionToggle = () => () =>
-		setIsAccordionOpen(!isAccordionOpen);
 
 	return (
 		<Box
@@ -149,14 +145,11 @@ function LocationMap() {
 			}}
 		>
 			<AppBar position="static" color="default" elevation={1} enableColorOnDark>
-				<Accordion expanded={isAccordionOpen} onChange={handleAccordionToggle}>
+				<Accordion expanded={isAccordionOpen}>
 					<Toolbar sx={{ justifyContent: "space-between", padding: 1 }}>
 						<Box sx={{ display: "flex", alignItems: "center", minWidth: 200 }}>
 							<AccordionSummary>
-								<IconButton
-									onClick={handleAccordionToggle(true)}
-									color="primary"
-								>
+								<IconButton onClick={toggleAccordion} color="primary">
 									<FilterListIcon />
 									<Typography variant="subtitle1" sx={{ ml: 1 }}>
 										필터

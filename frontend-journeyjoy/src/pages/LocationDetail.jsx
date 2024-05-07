@@ -1,17 +1,11 @@
 // frontend/src/pages/LocationDetail.jsx
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import {
-	Box,
-	Typography,
-	CircularProgress,
-	Snackbar,
-	Alert,
-	Dialog,
-} from "@mui/material";
+import { Box, Typography, CircularProgress, Dialog } from "@mui/material";
 import { GoogleMap, useJsApiLoader } from "@react-google-maps/api";
 import { useAuth } from "../contextAPI/AuthContext";
 import { usePlaces } from "../contextAPI/PlacesContext";
+import { useToggleManagement } from "../contextAPI/ToggleManagementContext";
 import LocationDetailDisplay from "../components/LocationDetail/LocationDetailDisplay";
 import LocationDetailForm from "../components/LocationDetail/LocationDetailForm";
 import LocationActionButtons from "../components/LocationDetail/LocationActionButtons";
@@ -21,20 +15,16 @@ import {
 	ActionContainer,
 } from "./styles/LocationDetailStyles";
 
-const containerStyle = {
-	width: "100%",
-	height: "400px",
-};
-
 const LocationDetail = () => {
 	const navigate = useNavigate();
 	const { id } = useParams();
 	const { currentUser } = useAuth();
 	const { userPlaces, updatePlace, deletePlace, getCoordinatesFromAddress } =
 		usePlaces();
+	const { isImageOpen, toggleImage, isEditing, toggleEditing, showAlert } =
+		useToggleManagement();
 	const [location, setLocation] = useState(null);
 	const [coords, setCoords] = useState({ lat: 33.450701, lng: 126.570667 });
-	const [isEditing, setIsEditing] = useState(false);
 	const [formData, setFormData] = useState({
 		name: "",
 		description: "",
@@ -42,9 +32,6 @@ const LocationDetail = () => {
 		featuredIn: "",
 		genre: "",
 	});
-	const [isLoading, setIsLoading] = useState(true);
-	const [error, setError] = useState("");
-	const [imageOpen, setImageOpen] = useState(false);
 	const { isLoaded } = useJsApiLoader({
 		id: "google-map-script",
 		googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
@@ -64,7 +51,6 @@ const LocationDetail = () => {
 			});
 			fetchCoordinates(foundLocation.location);
 		}
-		setIsLoading(false);
 	}, [id, userPlaces]);
 
 	const fetchCoordinates = async (address) => {
@@ -82,39 +68,38 @@ const LocationDetail = () => {
 			await deletePlace(id);
 			navigate("/");
 		} catch (error) {
-			setError("Failed to delete location. Please try again.");
+			showAlert("error", "삭제에 실패했습니다. 다시 시도해 주세요.");
 		}
 	};
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		setIsLoading(true);
-
 		try {
 			await updatePlace(id, formData);
-			setIsEditing(false);
+			toggleEditing();
 			setLocation({ ...location, ...formData });
 			fetchCoordinates(formData.address);
 		} catch (error) {
-			setError("Failed to update location. Please try again.");
-		} finally {
-			setIsLoading(false);
+			showAlert("error", "업데이트에 실패했습니다. 다시 시도해 주세요.");
 		}
 	};
 
-	if (isLoading) return <CircularProgress />;
 	if (!location)
-		return <Typography>{error || "Loading location details..."}</Typography>;
+		return isLoaded ? (
+			<CircularProgress />
+		) : (
+			<Typography>데이터 로딩중...</Typography>
+		);
 
-	return isLoaded ? (
+	return (
 		<DetailPaper>
 			<ImageBanner
 				src={location.imageUrl}
 				alt={location.name}
 				loading="lazy"
-				onClick={() => setImageOpen(true)}
+				onClick={toggleImage}
 			/>
-			<Dialog open={imageOpen} onClose={() => setImageOpen(false)}>
+			<Dialog open={isImageOpen} onClose={toggleImage}>
 				<img
 					src={location.imageUrl}
 					alt={location.name}
@@ -128,7 +113,7 @@ const LocationDetail = () => {
 			)}
 			<Box sx={{ width: "100%", height: "400px", mt: 2 }}>
 				<GoogleMap
-					mapContainerStyle={containerStyle}
+					mapContainerStyle={{ width: "100%", height: "400px" }}
 					center={coords}
 					zoom={15}
 					options={{
@@ -142,28 +127,13 @@ const LocationDetail = () => {
 				<ActionContainer>
 					<LocationActionButtons
 						isEditing={isEditing}
-						setIsEditing={setIsEditing}
+						setIsEditing={toggleEditing}
 						handleDelete={handleDelete}
 						handleSubmit={handleSubmit}
 					/>
 				</ActionContainer>
 			)}
-			<Snackbar
-				open={!!error}
-				autoHideDuration={6000}
-				onClose={() => setError("")}
-			>
-				<Alert
-					onClose={() => setError("")}
-					severity="error"
-					sx={{ width: "100%" }}
-				>
-					{error}
-				</Alert>
-			</Snackbar>
 		</DetailPaper>
-	) : (
-		<Typography>Loading map...</Typography>
 	);
 };
 

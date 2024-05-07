@@ -53,7 +53,7 @@ function Home() {
 		filterLocations();
 	}, [userPlaces, selectedGenres]);
 
-	if (isLoading) return <Typography>Loading...</Typography>;
+	if (isLoading) return <Typography>데이터 로딩중...</Typography>;
 
 	return (
 		<HomeContainer>

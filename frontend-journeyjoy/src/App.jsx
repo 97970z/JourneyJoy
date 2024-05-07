@@ -4,6 +4,7 @@ import { BrowserRouter, useRoutes } from "react-router-dom";
 import { useAuth } from "./contextAPI/AuthContext";
 import { AuthProvider } from "./contextAPI/AuthContext";
 import { PlacesProvider } from "./contextAPI/PlacesContext";
+import { ToggleManagementProvider } from "./contextAPI/ToggleManagementContext";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
@@ -34,10 +35,12 @@ function App() {
 	return (
 		<AuthProvider>
 			<PlacesProvider>
-				<BrowserRouter>
-					<Navbar />
-					<AppRoutes />
-				</BrowserRouter>
+				<ToggleManagementProvider>
+					<BrowserRouter>
+						<Navbar />
+						<AppRoutes />
+					</BrowserRouter>
+				</ToggleManagementProvider>
 			</PlacesProvider>
 		</AuthProvider>
 	);

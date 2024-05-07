@@ -12,16 +12,16 @@ import {
 	InputLabel,
 	Select,
 	MenuItem,
-	Snackbar,
-	Alert,
 } from "@mui/material";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import { usePlaces } from "../../contextAPI/PlacesContext";
+import { useToggleManagement } from "../../contextAPI/ToggleManagementContext";
 
-const MAX_FILE_SIZE = 3 * 1024 * 1024; // 3 MB
+const MAX_FILE_SIZE = 3 * 1024 * 1024;
 
 const AddLocationModal = ({ open, handleClose, username }) => {
 	const navigate = useNavigate();
+	const { showAlert } = useToggleManagement();
 	const { addPlace } = usePlaces();
 	const [formData, setFormData] = useState({
 		name: "",
@@ -31,10 +31,7 @@ const AddLocationModal = ({ open, handleClose, username }) => {
 		genre: "",
 		image: null,
 	});
-	const [fileError, setFileError] = useState("");
 	const [filePreview, setFilePreview] = useState(null);
-	const [openSnackbar, setOpenSnackbar] = useState(false);
-	const [snackbarMessage, setSnackbarMessage] = useState("");
 
 	const handleChange = (e) => {
 		setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -43,11 +40,10 @@ const AddLocationModal = ({ open, handleClose, username }) => {
 	const handleFileChange = (e) => {
 		const file = e.target.files[0];
 		if (file && file.size > MAX_FILE_SIZE) {
-			setFileError("이미지 파일은 3MB 이하여야 합니다.");
+			showAlert("error", "이미지 파일은 3MB 이하여야 합니다.");
 			e.target.value = null;
 		} else {
 			setFormData({ ...formData, image: file });
-			setFileError("");
 			setFilePreview(URL.createObjectURL(file));
 		}
 	};
@@ -55,14 +51,12 @@ const AddLocationModal = ({ open, handleClose, username }) => {
 	const validateForm = () => {
 		for (const key in formData) {
 			if (formData[key] === "" && key !== "image") {
-				setSnackbarMessage("입력하지 않은 항목이 있습니다.");
-				setOpenSnackbar(true);
+				showAlert("warning", "입력하지 않은 항목이 있습니다.");
 				return false;
 			}
 		}
 		if (!formData.image) {
-			setSnackbarMessage("이미지 파일을 업로드해주세요.");
-			setOpenSnackbar(true);
+			showAlert("warning", "이미지 파일을 업로드해주세요.");
 			return false;
 		}
 		return true;
@@ -95,16 +89,11 @@ const AddLocationModal = ({ open, handleClose, username }) => {
 		}
 	};
 
-	const handleCloseSnackbar = () => {
-		setOpenSnackbar(false);
-	};
-
 	return (
 		<>
 			<Dialog open={open} onClose={handleClose}>
 				<DialogTitle>장소 추가</DialogTitle>
 				<DialogContent>
-					{fileError && <Alert severity="error">{fileError}</Alert>}
 					{filePreview && (
 						<Box sx={{ mb: 2, textAlign: "center" }}>
 							<img
@@ -201,19 +190,6 @@ const AddLocationModal = ({ open, handleClose, username }) => {
 					<Button onClick={handleSubmit}>추가하기</Button>
 				</DialogActions>
 			</Dialog>
-			<Snackbar
-				open={openSnackbar}
-				autoHideDuration={6000}
-				onClose={handleCloseSnackbar}
-			>
-				<Alert
-					onClose={handleCloseSnackbar}
-					severity="warning"
-					sx={{ width: "100%" }}
-				>
-					{snackbarMessage}
-				</Alert>
-			</Snackbar>
 		</>
 	);
 };
