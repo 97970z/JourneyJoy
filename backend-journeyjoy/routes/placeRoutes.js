@@ -38,7 +38,7 @@ router.post(
   "/add",
   parser.single("image"),
   authenticateToken,
-  async (req, res) => {
+  async (req, res, next) => {
     const { name, location, description, featuredIn, genre, addedBy } =
       req.body;
 
@@ -63,7 +63,7 @@ router.post(
 );
 
 // 장소 검색
-router.get("/search", async (req, res) => {
+router.get("/search", async (req, res, next) => {
   const { q } = req.query;
   try {
     const regex = new RegExp(q, "i");
@@ -82,7 +82,7 @@ router.get("/search", async (req, res) => {
 });
 
 // 특정 장소 가져오기
-router.get("/:id", async (req, res) => {
+router.get("/:id", async (req, res, next) => {
   try {
     const place = await Place.findById(req.params.id);
     if (!place) {
@@ -99,7 +99,7 @@ router.put(
   "/:id",
   authenticateToken,
   parser.single("image"),
-  async (req, res) => {
+  async (req, res, next) => {
     try {
       const place = await Place.findById(req.params.id);
       if (!place) {
@@ -139,7 +139,7 @@ router.put(
 );
 
 // 장소 삭제
-router.delete("/:id", authenticateToken, async (req, res) => {
+router.delete("/:id", authenticateToken, async (req, res, next) => {
   try {
     const place = await Place.findById(req.params.id);
     if (!place) {
@@ -165,7 +165,7 @@ router.delete("/:id", authenticateToken, async (req, res) => {
   }
 });
 
-router.get("/status/:status", async (req, res) => {
+router.get("/status/:status", async (req, res, next) => {
   const { status } = req.params;
   try {
     const places = await Place.find({ status: status });
@@ -176,32 +176,37 @@ router.get("/status/:status", async (req, res) => {
 });
 
 // 장소 상태 업데이트
-router.put("/:id/status", authenticateToken, adminCheck, async (req, res) => {
-  const { status } = req.body;
-  try {
-    const place = await Place.findById(req.params.id);
-    if (!place) {
-      return res.status(404).send("Place not found");
-    }
-
-    if (status === "Rejected") {
-      if (place.imagePublicId) {
-        await cloudinary.uploader.destroy(place.imagePublicId);
+router.put(
+  "/:id/status",
+  authenticateToken,
+  adminCheck,
+  async (req, res, next) => {
+    const { status } = req.body;
+    try {
+      const place = await Place.findById(req.params.id);
+      if (!place) {
+        return res.status(404).send("Place not found");
       }
 
-      await Place.deleteOne({ _id: req.params.id });
-      return res.status(204).send();
+      if (status === "Rejected") {
+        if (place.imagePublicId) {
+          await cloudinary.uploader.destroy(place.imagePublicId);
+        }
+
+        await Place.deleteOne({ _id: req.params.id });
+        return res.status(204).send();
+      }
+
+      place.status = status;
+      await place.save();
+      res.json(place);
+    } catch (error) {
+      next(error);
     }
-
-    place.status = status;
-    await place.save();
-    res.json(place);
-  } catch (error) {
-    next(error);
   }
-});
+);
 
-const fetchExternalPlacesData = async () => {
+const fetchExternalPlacesData = async (req, res, next) => {
   try {
     const response = await axios.get(
       "https://apis.data.go.kr/B551010/locfilming/locfilmingList",
@@ -228,7 +233,7 @@ const fetchExternalPlacesData = async () => {
       lng: parseFloat(item.longitude._text),
     }));
   } catch (error) {
-    next(error);
+    console.error("Failed to fetch external places:", error);
   }
 };
 
@@ -257,7 +262,7 @@ async function fetchFestivalData() {
     }
     cachedFestivalData = festivals;
   } catch (error) {
-    next(error);
+    console.error("Failed to fetch festival data:", error);
   }
 }
 

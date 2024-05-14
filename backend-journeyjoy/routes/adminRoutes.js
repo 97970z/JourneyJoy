@@ -11,7 +11,7 @@ router.get("/", adminCheck, (req, res) => {
 });
 
 // 관리자 패널에서 모든 장소 가져오기
-router.get("/all", authenticateToken, adminCheck, async (req, res) => {
+router.get("/all", authenticateToken, adminCheck, async (req, res, next) => {
   const { _page = 1, _limit = 5, status } = req.query;
   const query = status ? { status } : {};
   try {

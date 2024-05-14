@@ -23,7 +23,7 @@ router.post(
       .withMessage("비밀번호는 4자 이상이어야 합니다."),
     body("email").isEmail().withMessage("이메일 형식이어야 합니다."),
   ],
-  async (req, res) => {
+  async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
@@ -55,7 +55,7 @@ router.post(
 );
 
 // 로그인
-router.post("/login", async (req, res) => {
+router.post("/login", async (req, res, next) => {
   try {
     const user = await User.findOne({ username: req.body.username });
     if (
@@ -87,7 +87,7 @@ router.post("/login", async (req, res) => {
 });
 
 // Refresh Token을 사용하여 새로운 Access Token 발급
-router.post("/refresh", async (req, res) => {
+router.post("/refresh", async (req, res, next) => {
   const { refreshToken } = req.body;
   if (!refreshToken)
     return res.status(401).json({ message: "Refresh Token is required" });
@@ -108,7 +108,7 @@ router.post("/refresh", async (req, res) => {
   }
 });
 
-router.get("/verify-email", async (req, res) => {
+router.get("/verify-email", async (req, res, next) => {
   const { token } = req.query;
   try {
     const decoded = jwt.verify(token, jwtSecret);
