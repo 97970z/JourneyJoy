@@ -1,6 +1,7 @@
 // backend/middleware/authenticateToken.js
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
+import { jwtSecret } from "../config/envConfig.js";
 
 const authenticateToken = async (req, res, next) => {
   const authHeader = req.headers["authorization"];
@@ -8,7 +9,7 @@ const authenticateToken = async (req, res, next) => {
 
   if (token == null) return res.sendStatus(401); // 토큰 없음
 
-  jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
+  jwt.verify(token, jwtSecret, async (err, decoded) => {
     if (err) return res.sendStatus(403); // 토큰 만료
 
     try {

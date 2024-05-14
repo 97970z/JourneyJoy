@@ -28,8 +28,7 @@ router.get("/all", authenticateToken, adminCheck, async (req, res) => {
       limit: parseInt(_limit),
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error", error });
+    next(error);
   }
 });
 

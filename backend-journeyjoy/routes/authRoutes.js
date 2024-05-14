@@ -49,7 +49,7 @@ router.post(
 
       res.status(201).json({ message: "User created successfully." });
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      next(error);
     }
   }
 );
@@ -77,14 +77,12 @@ router.post("/login", async (req, res) => {
 
       res.status(200).json({ accessToken, refreshToken });
     } else {
-      res
-        .status(400)
-        .json({
-          message: "유저 정보가 일치하지 않거나 이메일이 인증되지 않았습니다.",
-        });
+      res.status(400).json({
+        message: "유저 정보가 일치하지 않거나 이메일이 인증되지 않았습니다.",
+      });
     }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 });
 
@@ -106,7 +104,7 @@ router.post("/refresh", async (req, res) => {
     });
     res.json({ accessToken: newAccessToken });
   } catch (error) {
-    res.status(403).json({ message: "Invalid Refresh Token" });
+    next(error);
   }
 });
 
@@ -124,7 +122,7 @@ router.get("/verify-email", async (req, res) => {
       .status(200)
       .send("이메일 인증이 완료되었습니다. 저니조이로 돌아가서 로그인하세요.");
   } catch (error) {
-    res.status(400).send("Invalid or expired token.");
+    next(error);
   }
 });
 

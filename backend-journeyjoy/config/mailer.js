@@ -1,3 +1,4 @@
+// backend/config/mailer.js
 import nodemailer from "nodemailer";
 import { emailUser, emailPassword } from "./envConfig.js";
 

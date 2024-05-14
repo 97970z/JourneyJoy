@@ -57,7 +57,7 @@ router.post(
       await newPlace.save();
       res.status(201).json(newPlace);
     } catch (error) {
-      res.status(400).json({ error: error.message });
+      next(error);
     }
   }
 );
@@ -77,7 +77,7 @@ router.get("/search", async (req, res) => {
     });
     res.status(200).json(places);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 });
 
@@ -90,7 +90,7 @@ router.get("/:id", async (req, res) => {
     }
     res.json(place);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 });
 
@@ -133,7 +133,7 @@ router.put(
       await place.save();
       res.json(place);
     } catch (error) {
-      res.status(500).json({ message: "Server error", error: error.message });
+      next(error);
     }
   }
 );
@@ -161,8 +161,7 @@ router.delete("/:id", authenticateToken, async (req, res) => {
     await Place.deleteOne({ _id: req.params.id });
     res.status(204).send();
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error", error: error.message });
+    next(error);
   }
 });
 
@@ -172,7 +171,7 @@ router.get("/status/:status", async (req, res) => {
     const places = await Place.find({ status: status });
     res.json(places);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 });
 
@@ -198,7 +197,7 @@ router.put("/:id/status", authenticateToken, adminCheck, async (req, res) => {
     await place.save();
     res.json(place);
   } catch (error) {
-    res.status(500).send("Server error");
+    next(error);
   }
 });
 
@@ -229,7 +228,7 @@ const fetchExternalPlacesData = async () => {
       lng: parseFloat(item.longitude._text),
     }));
   } catch (error) {
-    console.error("Failed to fetch external places:", error);
+    next(error);
   }
 };
 
@@ -258,7 +257,7 @@ async function fetchFestivalData() {
     }
     cachedFestivalData = festivals;
   } catch (error) {
-    console.error("Failed to fetch festival data:", error);
+    next(error);
   }
 }
 

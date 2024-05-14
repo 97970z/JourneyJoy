@@ -3,15 +3,17 @@ import cors from "cors";
 import express from "express";
 import mongoose from "mongoose";
 import helmet from "helmet";
-import rateLimit from "express-rate-limit";
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import placeRoutes from "./routes/placeRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
+import apiLimiter from "./middleware/rateLimiter.js";
+import errorHandler from "./middleware/errorHandler.js";
 import { mongoURI, PORT } from "./config/envConfig.js";
 
 const app = express();
 
+app.use(helmet());
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
@@ -34,15 +36,9 @@ app.use(
     },
   })
 );
-// app.use(helmet());
 app.use(cors()); // CORS 미들웨어 추가
 app.use(express.json()); // JSON 요청 본문 파싱
-app.use(
-  rateLimit({
-    windowMs: 10 * 60 * 1000, // 10분
-    max: 100, // 각 IP를 요청 100개로 제한.
-  })
-);
+app.use(apiLimiter);
 
 // MongoDB 연결
 mongoose
@@ -54,6 +50,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/places", placeRoutes);
 app.use("/api/admin", adminRoutes);
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

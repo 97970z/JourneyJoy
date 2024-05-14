@@ -2,6 +2,7 @@
 import { Router } from "express";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
+import { jwtSecret } from "../config/envConfig.js";
 import authenticateToken from "../middleware/authenticateToken.js";
 import adminCheck from "../middleware/adminCheck.js";
 
@@ -24,8 +25,7 @@ router.get("/", authenticateToken, adminCheck, async (req, res) => {
       limit: parseInt(_limit),
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).send("Server error");
+    next(error);
   }
 });
 
@@ -33,7 +33,7 @@ router.get("/", authenticateToken, adminCheck, async (req, res) => {
 router.get("/me", async (req, res) => {
   try {
     const token = req.headers.authorization.split(" ")[1];
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, jwtSecret);
     const userId = decoded.userId;
 
     const user = await User.findById(userId);
@@ -43,8 +43,7 @@ router.get("/me", async (req, res) => {
 
     res.json({ username: user.username, role: user.role });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error" });
+    next(error);
   }
 });
 
@@ -60,7 +59,7 @@ router.put("/:id/role", authenticateToken, adminCheck, async (req, res) => {
     await user.save();
     res.json(user);
   } catch (error) {
-    res.status(500).send("Server error");
+    next(error);
   }
 });
 
