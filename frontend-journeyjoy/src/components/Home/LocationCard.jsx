@@ -1,4 +1,4 @@
-// frontend/src/components/HomeComponents/LocationCard.jsx
+// frontend/src/components/Home/LocationCard.jsx
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Typography, CardActionArea } from "@mui/material";

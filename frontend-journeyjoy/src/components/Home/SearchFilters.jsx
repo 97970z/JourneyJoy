@@ -1,4 +1,4 @@
-// frontend/src/components/HomeComponents/SearchFilters.jsx
+// frontend/src/components/Home/SearchFilters.jsx
 import React from "react";
 import { Chip, Stack } from "@mui/material";
 

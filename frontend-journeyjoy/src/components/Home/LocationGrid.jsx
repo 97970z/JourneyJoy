@@ -1,4 +1,4 @@
-// frontend/src/components/HomeComponents/LocationGrid.jsx
+// frontend/src/components/Home/LocationGrid.jsx
 import React from "react";
 import Masonry from "@mui/lab/Masonry";
 import LocationCard from "./LocationCard";

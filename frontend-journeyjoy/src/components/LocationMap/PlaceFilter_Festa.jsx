@@ -1,3 +1,4 @@
+// frontend/src/components/LocationMap/PlaceFilter_Festa.jsx
 import { Chip, AccordionDetails } from "@mui/material";
 
 function PlaceFilter_Festa({

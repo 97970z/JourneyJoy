@@ -1,4 +1,5 @@
-import { Box, Typography, Paper } from "@mui/material";
+// frontend/src/components/LocationMap/CustomInfoWindow.jsx
+import { Box, Typography } from "@mui/material";
 
 const CustomInfoWindow = ({ place }) => {
 	return (

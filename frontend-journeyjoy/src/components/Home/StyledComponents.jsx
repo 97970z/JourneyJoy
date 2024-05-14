@@ -1,4 +1,4 @@
-// frontend/src/components/HomeComponents/StyledComponents.jsx
+// frontend/src/components/Home/StyledComponents.jsx
 import { styled } from "@mui/system";
 import { TextField, Button, Box, Card, CardMedia } from "@mui/material";
 

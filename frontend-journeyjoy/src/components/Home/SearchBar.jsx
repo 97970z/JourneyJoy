@@ -1,4 +1,4 @@
-// frontend/src/components/HomeComponents/SearchBar.jsx
+// frontend/src/components/Home/SearchBar.jsx
 import React from "react";
 import { Box } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";

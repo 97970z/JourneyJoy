@@ -34,9 +34,17 @@ function Register() {
 			showAlert("success", "회원가입이 완료되었습니다. 이메일을 확인해주세요.");
 			navigate("/login");
 		} catch (error) {
-			error.response.data.errors.forEach((error) => {
-				showAlert("error", error.msg);
-			});
+			const errorData = error.response.data.errors;
+			if (Array.isArray(errorData)) {
+				errorData.forEach((errorItem) => {
+					showAlert("error", errorItem.msg);
+				});
+			} else {
+				showAlert(
+					"error",
+					error.response?.data?.message || "서버 오류가 발생했습니다.",
+				);
+			}
 		}
 	};
 

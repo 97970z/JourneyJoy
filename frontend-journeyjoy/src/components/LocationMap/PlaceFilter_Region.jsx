@@ -1,3 +1,4 @@
+// frontend/src/components/LocationMap/PlaceFilter_Region.jsx
 import { Chip, AccordionDetails } from "@mui/material";
 
 function PlaceFilter_Region({ sidos, selectedSido, setSelectedSido }) {
