@@ -96,6 +96,7 @@ function LocationMap() {
 
 		if (searchTerm) applySearch();
 		else if (selectedSido !== "None") applyFilter();
+		else if (selectedCodename !== "None") applyFilter();
 		else setFilteredPlaces([]);
 	};
 
@@ -108,12 +109,25 @@ function LocationMap() {
 						place.movieTitle.toLowerCase().includes(searchTerm.toLowerCase())),
 			),
 		);
+		setFilteredFestaPlaces(
+			festaPlaces.filter(
+				(place) =>
+					(selectedCodename === "All" || place.CODENAME === selectedCodename) &&
+					(searchTerm === "" ||
+						place.TITLE.toLowerCase().includes(searchTerm.toLowerCase())),
+			),
+		);
 	};
 
 	const applySearch = () => {
 		setFilteredPlaces(
 			apiPlaces.filter((place) =>
 				place.movieTitle.toLowerCase().includes(searchTerm.toLowerCase()),
+			),
+		);
+		setFilteredFestaPlaces(
+			festaPlaces.filter((place) =>
+				place.TITLE.toLowerCase().includes(searchTerm.toLowerCase()),
 			),
 		);
 	};
