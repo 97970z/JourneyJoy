@@ -1,5 +1,11 @@
 // src/contextAPI/PlacesContext.jsx
-import { createContext, useContext, useState, useEffect } from "react";
+import {
+	createContext,
+	useContext,
+	useState,
+	useEffect,
+	useCallback,
+} from "react";
 import Api from "../baseAPI/Api";
 import axios from "axios";
 
@@ -9,34 +15,37 @@ export const usePlaces = () => useContext(PlacesContext);
 
 export const PlacesProvider = ({ children }) => {
 	const [userPlaces, setUserPlaces] = useState([]);
-	const [apiPlaces, setApiPlaces] = useState([]);
+	const [movieFilmPlaces, setMovieFilmPlaces] = useState([]);
+	const [tvFilmPlaces, setTvFilmPlaces] = useState([]);
 	const [festaPlaces, setFestaPlaces] = useState([]);
-	const [isLoading, setIsLoading] = useState(true);
+	const [nationalFestaPlaces, setNationalFestaPlaces] = useState([]);
+	const [isLoading, setIsLoading] = useState(false);
 
 	useEffect(() => {
-		fetchPlaces();
-	}, []);
+		if (userPlaces.length === 0) {
+			fetchPlaces();
+		}
+	}, [userPlaces.length]);
 
-	const fetchPlaces = async () => {
+	const fetchPlaces = useCallback(async () => {
 		setIsLoading(true);
 		try {
-			const status = "Approved";
-			const response = await Api.get(`/places/status/${status}`);
+			const response = await Api.get(`/places/status/Approved`);
 			setUserPlaces(response.data);
 		} catch (error) {
 			console.error("Failed to fetch places:", error);
 		} finally {
 			setIsLoading(false);
 		}
-	};
+	}, []);
 
-	const getCoordinatesFromAddress = async (address) => {
+	const getCoordinatesFromAddress = useCallback(async (address) => {
 		try {
 			const response = await axios.get(
 				"https://maps.googleapis.com/maps/api/geocode/json",
 				{
 					params: {
-						address: address,
+						address,
 						key: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
 					},
 				},
@@ -53,53 +62,72 @@ export const PlacesProvider = ({ children }) => {
 			console.error("Failed to get coordinates from address:", error);
 			return { lat: 0, lng: 0 };
 		}
-	};
+	}, []);
 
-	const addPlace = async (formData) => {
+	const addPlace = useCallback(async (formData) => {
 		try {
 			const response = await Api.post("/places/add", formData);
 			const newPlace = response.data;
-
-			setUserPlaces([...userPlaces, newPlace]);
+			setUserPlaces((prevPlaces) => [...prevPlaces, newPlace]);
 			return newPlace._id;
 		} catch (error) {
 			console.error("Failed to add location", error);
 		}
-	};
+	}, []);
 
-	const deletePlace = async (id) => {
+	const deletePlace = useCallback(async (id) => {
 		try {
 			await Api.delete(`/places/${id}`);
-			setUserPlaces(userPlaces.filter((place) => place._id !== id));
+			setUserPlaces((prevPlaces) =>
+				prevPlaces.filter((place) => place._id !== id),
+			);
 		} catch (error) {
 			console.error("Failed to delete location", error);
 		}
-	};
+	}, []);
 
-	const updatePlace = async (id, formData) => {
+	const updatePlace = useCallback(async (id, formData) => {
 		try {
 			const response = await Api.put(`/places/${id}`, formData);
-			setUserPlaces(
-				userPlaces.map((place) => (place._id === id ? response.data : place)),
+			setUserPlaces((prevPlaces) =>
+				prevPlaces.map((place) => (place._id === id ? response.data : place)),
 			);
 		} catch (error) {
 			console.error("Failed to update location", error);
 		}
-	};
+	}, []);
 
-	const fetchExternalPlaces = async () => {
+	const fetchMovieFilmPlaces = useCallback(async () => {
+		if (movieFilmPlaces.length > 0) return;
+
 		setIsLoading(true);
 		try {
-			const response = await Api.get("/places/external-places");
-			setApiPlaces(response.data);
+			const response = await Api.get("/places/movieFilmPlaces");
+			setMovieFilmPlaces(response.data);
 		} catch (error) {
 			console.error("Failed to fetch external places:", error);
 		} finally {
 			setIsLoading(false);
 		}
-	};
+	}, [movieFilmPlaces.length]);
 
-	const fetchExternalPlaces_Festa = async () => {
+	const fetchTvFilmPlaces = useCallback(async () => {
+		if (tvFilmPlaces.length > 0) return;
+
+		setIsLoading(true);
+		try {
+			const response = await Api.get("/places/tvFilmPlaces");
+			setTvFilmPlaces(response.data);
+		} catch (error) {
+			console.error("Failed to fetch external places:", error);
+		} finally {
+			setIsLoading(false);
+		}
+	}, [tvFilmPlaces.length]);
+
+	const fetchFestaPlaces = useCallback(async () => {
+		if (festaPlaces.length > 0) return;
+
 		setIsLoading(true);
 		try {
 			const response = await Api.get("/places/festivals");
@@ -109,21 +137,39 @@ export const PlacesProvider = ({ children }) => {
 		} finally {
 			setIsLoading(false);
 		}
-	};
+	}, [festaPlaces.length]);
+
+	const fetchNationalFestaPlaces = useCallback(async () => {
+		if (nationalFestaPlaces.length > 0) return;
+
+		setIsLoading(true);
+		try {
+			const response = await Api.get("/places/nationalFestivals");
+			setNationalFestaPlaces(response.data);
+		} catch (error) {
+			console.error("Failed to fetch national festival places:", error);
+		} finally {
+			setIsLoading(false);
+		}
+	}, [nationalFestaPlaces.length]);
 
 	return (
 		<PlacesContext.Provider
 			value={{
 				userPlaces,
-				apiPlaces,
+				movieFilmPlaces,
+				tvFilmPlaces,
 				festaPlaces,
+				nationalFestaPlaces,
 				isLoading,
 				addPlace,
 				deletePlace,
 				updatePlace,
 				fetchPlaces,
-				fetchExternalPlaces,
-				fetchExternalPlaces_Festa,
+				fetchMovieFilmPlaces,
+				fetchTvFilmPlaces,
+				fetchFestaPlaces,
+				fetchNationalFestaPlaces,
 				getCoordinatesFromAddress,
 			}}
 		>

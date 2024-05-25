@@ -27,8 +27,8 @@ const LocationDetail = () => {
 	const [coords, setCoords] = useState({ lat: 33.450701, lng: 126.570667 });
 	const [formData, setFormData] = useState({
 		name: "",
+		location: "",
 		description: "",
-		address: "",
 		featuredIn: "",
 		genre: "",
 	});
@@ -44,8 +44,8 @@ const LocationDetail = () => {
 			setLocation(foundLocation);
 			setFormData({
 				name: foundLocation.name,
+				location: foundLocation.location,
 				description: foundLocation.description,
-				address: foundLocation.location,
 				featuredIn: foundLocation.featuredIn,
 				genre: foundLocation.genre,
 			});
@@ -78,7 +78,7 @@ const LocationDetail = () => {
 			await updatePlace(id, formData);
 			toggleEditing();
 			setLocation({ ...location, ...formData });
-			fetchCoordinates(formData.address);
+			fetchCoordinates(formData.location);
 		} catch (error) {
 			showAlert("error", "업데이트에 실패했습니다. 다시 시도해 주세요.");
 		}

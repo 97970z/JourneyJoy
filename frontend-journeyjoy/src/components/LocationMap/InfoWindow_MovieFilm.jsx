@@ -1,7 +1,7 @@
-// frontend/src/components/LocationMap/CustomInfoWindow.jsx
+// frontend/src/components/LocationMap/InfoWindow_MovieFilm.jsx
 import { Box, Typography } from "@mui/material";
 
-const CustomInfoWindow = ({ place }) => {
+const InfoWindow_MovieFilm = ({ place }) => {
 	return (
 		<Box>
 			<Typography variant="h6" component="h3" sx={{ fontWeight: "bold" }}>
@@ -20,4 +20,4 @@ const CustomInfoWindow = ({ place }) => {
 	);
 };
 
-export default CustomInfoWindow;
+export default InfoWindow_MovieFilm;

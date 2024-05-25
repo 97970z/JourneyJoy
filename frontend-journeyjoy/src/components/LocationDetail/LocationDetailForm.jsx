@@ -12,7 +12,7 @@ const LocationDetailForm = ({ formData, handleChange }) => {
 	return (
 		<Box sx={{ padding: 3 }}>
 			<TextField
-				label="Name"
+				label="제목"
 				name="name"
 				fullWidth
 				variant="outlined"
@@ -21,7 +21,16 @@ const LocationDetailForm = ({ formData, handleChange }) => {
 				margin="normal"
 			/>
 			<TextField
-				label="Description"
+				label="주소"
+				name="location"
+				fullWidth
+				variant="outlined"
+				value={formData.location}
+				onChange={handleChange}
+				margin="normal"
+			/>
+			<TextField
+				label="장면 설명"
 				name="description"
 				fullWidth
 				variant="outlined"
@@ -32,7 +41,7 @@ const LocationDetailForm = ({ formData, handleChange }) => {
 				margin="normal"
 			/>
 			<TextField
-				label="Featured In"
+				label="출연작"
 				name="featuredIn"
 				fullWidth
 				variant="outlined"

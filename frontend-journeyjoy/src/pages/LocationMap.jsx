@@ -1,5 +1,5 @@
 // frontend/src/pages/LocationMap.jsx
-import { useState, useEffect } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
 	Box,
 	IconButton,
@@ -8,6 +8,7 @@ import {
 	Toolbar,
 	Accordion,
 	AccordionSummary,
+	CircularProgress,
 } from "@mui/material";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import HomeIcon from "@mui/icons-material/Home";
@@ -16,41 +17,89 @@ import { useToggleManagement } from "../contextAPI/ToggleManagementContext";
 import PlaceMap from "../components/LocationMap/PlaceMap";
 import PlaceSearch from "../components/LocationMap/PlaceSearch";
 import PlaceFilter_Region from "../components/LocationMap/PlaceFilter_Region";
+import PlaceFilter_Type from "../components/LocationMap/PlaceFilter_Type";
 import PlaceFilter_Festa from "../components/LocationMap/PlaceFilter_Festa";
 import regionCoordinates from "../constants/RegionCoordinates";
+import debounce from "lodash.debounce";
+
+const fetchWithRetry = async (fetchFunc, retries = 3, delay = 1000) => {
+	for (let i = 0; i < retries; i++) {
+		try {
+			await fetchFunc();
+			return;
+		} catch (error) {
+			if (i < retries - 1) {
+				await new Promise((resolve) => setTimeout(resolve, delay));
+			} else {
+				throw error;
+			}
+		}
+	}
+};
 
 function LocationMap() {
 	const { isAccordionOpen, toggleAccordion } = useToggleManagement();
 	const {
-		apiPlaces,
+		movieFilmPlaces,
+		tvFilmPlaces,
 		festaPlaces,
-		fetchExternalPlaces,
-		fetchExternalPlaces_Festa,
+		fetchMovieFilmPlaces,
+		fetchTvFilmPlaces,
+		fetchFestaPlaces,
 	} = usePlaces();
+	const [searchTerm, setSearchTerm] = useState("");
+	const [center, setCenter] = useState(regionCoordinates.None);
+	const [loading, setLoading] = useState(false);
+
 	const [sidos, setSidos] = useState([]);
 	const [selectedSido, setSelectedSido] = useState("None");
-	const [searchTerm, setSearchTerm] = useState("");
 	const [filteredPlaces, setFilteredPlaces] = useState([]);
-	const [center, setCenter] = useState(regionCoordinates.None);
+
 	const [codenames, setCodenames] = useState([]);
 	const [selectedCodename, setSelectedCodename] = useState("None");
 	const [filteredFestaPlaces, setFilteredFestaPlaces] = useState([]);
 
-	useEffect(() => {
-		initializePlaces();
-		locateUser();
-	}, [apiPlaces, festaPlaces]);
+	const [types, setTypes] = useState([]);
+	const [selectedType, setSelectedType] = useState("None");
+	const [filteredTvFilmPlaces, setFilteredTvFilmPlaces] = useState([]);
 
-	const initializePlaces = async () => {
-		if (apiPlaces.length === 0) await fetchExternalPlaces();
-		if (festaPlaces.length === 0) await fetchExternalPlaces_Festa();
-		setSidos(["None", "All", ...new Set(apiPlaces.map((item) => item.sido))]);
-		setCodenames([
-			"None",
-			"All",
-			...new Set(festaPlaces.map((place) => place.CODENAME)),
-		]);
-	};
+	useEffect(() => {
+		setLoading(true);
+		const initializePlaces = async () => {
+			try {
+				if (movieFilmPlaces.length === 0) fetchWithRetry(fetchMovieFilmPlaces);
+				if (tvFilmPlaces.length === 0) fetchWithRetry(fetchTvFilmPlaces);
+				if (festaPlaces.length === 0) fetchWithRetry(fetchFestaPlaces);
+				setSidos([
+					"None",
+					"All",
+					...new Set(movieFilmPlaces.map((place) => place.sido)),
+				]);
+				setCodenames([
+					"None",
+					"All",
+					...new Set(festaPlaces.map((place) => place.CODENAME)),
+				]);
+				setTypes([
+					"None",
+					"All",
+					...new Set(tvFilmPlaces.map((place) => place.MEDIA_TY)),
+				]);
+			} catch (error) {
+				console.error("Failed to fetch data:", error);
+			} finally {
+				setLoading(false);
+			}
+		};
+		initializePlaces();
+	}, [
+		fetchMovieFilmPlaces,
+		fetchTvFilmPlaces,
+		fetchFestaPlaces,
+		movieFilmPlaces,
+		tvFilmPlaces,
+		festaPlaces,
+	]);
 
 	const locateUser = () => {
 		if (navigator.geolocation) {
@@ -65,17 +114,42 @@ function LocationMap() {
 		}
 	};
 
+	const debouncedFilterPlaces = useCallback(
+		debounce(() => {
+			filterPlaces();
+		}, 300),
+		[
+			selectedSido,
+			selectedCodename,
+			selectedType,
+			searchTerm,
+			movieFilmPlaces,
+			tvFilmPlaces,
+			festaPlaces,
+		],
+	);
+
 	useEffect(() => {
+		debouncedFilterPlaces();
 		if (selectedSido && regionCoordinates[selectedSido]) {
 			setCenter(regionCoordinates[selectedSido]);
 		}
-		filterPlaces();
-	}, [searchTerm, selectedSido, selectedCodename, apiPlaces, festaPlaces]);
+		return debouncedFilterPlaces.cancel;
+	}, [
+		searchTerm,
+		selectedSido,
+		selectedCodename,
+		selectedType,
+		movieFilmPlaces,
+		tvFilmPlaces,
+		festaPlaces,
+		debouncedFilterPlaces,
+	]);
 
 	const filterPlaces = () => {
 		if (selectedSido !== "None") {
 			setFilteredPlaces(
-				apiPlaces.filter(
+				movieFilmPlaces.filter(
 					(place) => selectedSido === "All" || place.sido === selectedSido,
 				),
 			);
@@ -94,19 +168,33 @@ function LocationMap() {
 			setFilteredFestaPlaces([]);
 		}
 
+		if (selectedType !== "None") {
+			setFilteredTvFilmPlaces(
+				tvFilmPlaces.filter(
+					(place) => selectedType === "All" || place.MEDIA_TY === selectedType,
+				),
+			);
+		} else {
+			setFilteredTvFilmPlaces([]);
+		}
+
 		if (searchTerm) applySearch();
 		else if (selectedSido !== "None") applyFilter();
 		else if (selectedCodename !== "None") applyFilter();
+		else if (selectedType !== "None") applyFilter();
 		else setFilteredPlaces([]);
 	};
 
 	const applyFilter = () => {
 		setFilteredPlaces(
-			apiPlaces.filter(
+			movieFilmPlaces.filter(
 				(place) =>
 					(selectedSido === "All" || place.sido === selectedSido) &&
 					(searchTerm === "" ||
-						place.movieTitle.toLowerCase().includes(searchTerm.toLowerCase())),
+						(typeof place.movieTitle === "string" &&
+							place.movieTitle
+								.toLowerCase()
+								.includes(searchTerm.toLowerCase()))),
 			),
 		);
 		setFilteredFestaPlaces(
@@ -114,38 +202,84 @@ function LocationMap() {
 				(place) =>
 					(selectedCodename === "All" || place.CODENAME === selectedCodename) &&
 					(searchTerm === "" ||
-						place.TITLE.toLowerCase().includes(searchTerm.toLowerCase())),
+						(typeof place.TITLE === "string" &&
+							place.TITLE.toLowerCase().includes(searchTerm.toLowerCase()))),
+			),
+		);
+		setFilteredTvFilmPlaces(
+			tvFilmPlaces.filter(
+				(place) =>
+					(selectedType === "All" || place.MEDIA_TY === selectedType) &&
+					(searchTerm === "" ||
+						(typeof place.TITLE_NM === "string" &&
+							place.TITLE_NM.toLowerCase().includes(searchTerm.toLowerCase()))),
 			),
 		);
 	};
 
 	const applySearch = () => {
 		setFilteredPlaces(
-			apiPlaces.filter((place) =>
-				place.movieTitle.toLowerCase().includes(searchTerm.toLowerCase()),
+			movieFilmPlaces.filter(
+				(place) =>
+					typeof place.movieTitle === "string" &&
+					place.movieTitle.toLowerCase().includes(searchTerm.toLowerCase()),
 			),
 		);
 		setFilteredFestaPlaces(
-			festaPlaces.filter((place) =>
-				place.TITLE.toLowerCase().includes(searchTerm.toLowerCase()),
+			festaPlaces.filter(
+				(place) =>
+					typeof place.TITLE === "string" &&
+					place.TITLE.toLowerCase().includes(searchTerm.toLowerCase()),
+			),
+		);
+		setFilteredTvFilmPlaces(
+			tvFilmPlaces.filter(
+				(place) =>
+					typeof place.TITLE_NM === "string" &&
+					place.TITLE_NM.toLowerCase().includes(searchTerm.toLowerCase()),
 			),
 		);
 	};
 
 	const handleSelectSido = (sido) => {
 		setSelectedSido(sido);
-		setSelectedCodename("None");
-		setFilteredFestaPlaces([]);
+		resetFilters("sido");
 	};
 
 	const handleSelectCodename = (codename) => {
 		setSelectedCodename(codename);
-		setFilteredFestaPlaces(
-			festaPlaces.filter((place) => place.CODENAME === codename),
-		);
-		setSelectedSido("None");
-		setFilteredPlaces([]);
+		resetFilters("codename");
 	};
+
+	const handleSelectType = (type) => {
+		setSelectedType(type);
+		resetFilters("type");
+	};
+
+	const resetFilters = (filterType) => {
+		setFilteredPlaces([]);
+		setFilteredFestaPlaces([]);
+		setFilteredTvFilmPlaces([]);
+
+		if (filterType !== "sido") setSelectedSido("None");
+		if (filterType !== "codename") setSelectedCodename("None");
+		if (filterType !== "type") setSelectedType("None");
+	};
+
+	if (loading) {
+		return (
+			<Box
+				sx={{
+					display: "flex",
+					justifyContent: "center",
+					alignItems: "center",
+					height: "100vh",
+				}}
+			>
+				<CircularProgress />
+			</Box>
+		);
+	}
 
 	return (
 		<Box
@@ -190,7 +324,7 @@ function LocationMap() {
 							justifyContent: "center",
 						}}
 					>
-						지역 필터
+						전국 영화 촬영지 필터
 					</Typography>
 					<PlaceFilter_Region
 						sidos={sidos}
@@ -209,10 +343,26 @@ function LocationMap() {
 						selectedCodename={selectedCodename}
 						setSelectedCodename={handleSelectCodename}
 					/>
+					<hr />
+					<Typography
+						variant="subtitle1"
+						sx={{ px: 2, display: "flex", justifyContent: "center" }}
+					>
+						TV 촬영지 필터
+					</Typography>
+					<PlaceFilter_Type
+						types={types}
+						selectedType={selectedType}
+						setSelectedType={handleSelectType}
+					/>
 				</Accordion>
 			</AppBar>
 			<PlaceMap
-				places={[...filteredFestaPlaces, ...filteredPlaces]}
+				places={[
+					...filteredFestaPlaces,
+					...filteredPlaces,
+					...filteredTvFilmPlaces,
+				]}
 				center={center}
 			/>
 		</Box>

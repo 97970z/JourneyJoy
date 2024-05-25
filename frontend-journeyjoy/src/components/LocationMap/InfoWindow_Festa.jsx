@@ -1,7 +1,7 @@
-// frontend/src/components/LocationMap/FestivalInfoWindow.jsx
+// frontend/src/components/LocationMap/InfoWindow_Festa.jsx
 import { Box, Typography, Link } from "@mui/material";
 
-const FestivalInfoWindow = ({ festival }) => {
+const InfoWindow_Festa = ({ festival }) => {
 	return (
 		<Box sx={{ padding: 2 }}>
 			<Typography variant="h6" component="div">
@@ -21,4 +21,4 @@ const FestivalInfoWindow = ({ festival }) => {
 	);
 };
 
-export default FestivalInfoWindow;
+export default InfoWindow_Festa;
