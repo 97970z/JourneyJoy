@@ -22,7 +22,7 @@ import PlaceFilter_Festa from "../components/LocationMap/PlaceFilter_Festa";
 import regionCoordinates from "../constants/RegionCoordinates";
 import debounce from "lodash.debounce";
 
-const fetchWithRetry = async (fetchFunc, retries = 3, delay = 1000) => {
+const fetchWithRetry = async (fetchFunc, retries = 3, delay = 300) => {
 	for (let i = 0; i < retries; i++) {
 		try {
 			await fetchFunc();
