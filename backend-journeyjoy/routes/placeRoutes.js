@@ -1,6 +1,7 @@
 // backend/routes/placeRoutes.js
 import { Router } from "express";
 import axios from "axios";
+import * as XLSX from "xlsx";
 import { xml2js } from "xml-js";
 import { v2 as cloudinary } from "cloudinary";
 import Place from "../models/Place.js";
@@ -13,27 +14,34 @@ import { seoulDataApiKey, openApiServiceKey } from "../config/envConfig.js";
 const router = Router();
 
 let cachedFestivalData = [];
-let cachedExternalPlaces = [];
+let cachedMovieFilmPlaces = [];
+let cachedTvFilmPlaces = [];
 
-// 공공데이터(영화 촬영 장소) 가져오기
-router.get("/external-places", (req, res) => {
-  if (cachedExternalPlaces.length === 0) {
-    return res
-      .status(404)
-      .json({ message: "No external places data available" });
+const fetchDataIfEmpty = async (cache, fetchFunction) => {
+  if (cache.length === 0) {
+    await fetchFunction();
   }
-  res.json(cachedExternalPlaces);
-});
+};
 
-// 공공데이터(축제 데이터) 가져오기
-router.get("/festivals", (req, res) => {
-  if (cachedFestivalData.length === 0) {
-    return res.status(404).json({ message: "No festival data available" });
-  }
+const handleGetMovieFilmPlaces = async (req, res) => {
+  await fetchDataIfEmpty(cachedMovieFilmPlaces, fetchMovieFilmPlacesData);
+  res.json(cachedMovieFilmPlaces);
+};
+
+const handleGetTvFilmPlaces = async (req, res) => {
+  await fetchDataIfEmpty(cachedTvFilmPlaces, fetchTvFilmPlacesData);
+  res.json(cachedTvFilmPlaces);
+};
+
+const handleGetFestivals = async (req, res) => {
+  await fetchDataIfEmpty(cachedFestivalData, fetchSeoulFestivalData);
   res.json(cachedFestivalData);
-});
+};
 
-// 장소 추가
+router.get("/movieFilmPlaces", handleGetMovieFilmPlaces);
+router.get("/tvFilmPlaces", handleGetTvFilmPlaces);
+router.get("/festivals", handleGetFestivals);
+
 router.post(
   "/add",
   parser.single("image"),
@@ -62,7 +70,6 @@ router.post(
   }
 );
 
-// 장소 검색
 router.get("/search", async (req, res, next) => {
   const { q } = req.query;
   try {
@@ -81,7 +88,6 @@ router.get("/search", async (req, res, next) => {
   }
 });
 
-// 특정 장소 가져오기
 router.get("/:id", async (req, res, next) => {
   try {
     const place = await Place.findById(req.params.id);
@@ -112,23 +118,23 @@ router.put(
           .json({ message: "Not authorized to update this place" });
       }
 
-      // 새 이미지 처리
       if (req.file) {
-        // 기존 이미지가 있으면 Cloudinary에서 삭제
         if (place.imagePublicId) {
           await cloudinary.uploader.destroy(place.imagePublicId);
         }
-        // 새 이미지를 Cloudinary에 업로드하고 public_id 업데이트
-        place.imagePublicId = req.file.filename; // cloudinary가 제공하는 filename
-        place.imageUrl = req.file.path; // Cloudinary에서 접근 가능한 이미지 URL
+        place.imagePublicId = req.file.filename;
+        place.imageUrl = req.file.path;
       }
 
-      // 다른 정보 업데이트
-      place.name = req.body.name || place.name;
-      place.location = req.body.location || place.location;
-      place.description = req.body.description || place.description;
-      place.featuredIn = req.body.featuredIn || place.featuredIn;
-      place.genre = req.body.genre || place.genre;
+      ["name", "location", "description", "featuredIn", "genre"].forEach(
+        (field) => {
+          if (req.body[field]) {
+            place[field] = req.body[field];
+          }
+        }
+      );
+
+      place.status = "Pending";
 
       await place.save();
       res.json(place);
@@ -168,7 +174,7 @@ router.delete("/:id", authenticateToken, async (req, res, next) => {
 router.get("/status/:status", async (req, res, next) => {
   const { status } = req.params;
   try {
-    const places = await Place.find({ status: status });
+    const places = await Place.find({ status });
     res.json(places);
   } catch (error) {
     next(error);
@@ -206,7 +212,7 @@ router.put(
   }
 );
 
-const fetchExternalPlacesData = async (req, res, next) => {
+const fetchMovieFilmPlacesData = async () => {
   try {
     const response = await axios.get(
       "https://apis.data.go.kr/B551010/locfilming/locfilmingList",
@@ -222,22 +228,52 @@ const fetchExternalPlacesData = async (req, res, next) => {
     let items = result.response?.item ?? [];
     if (!Array.isArray(items)) items = [items];
 
-    cachedExternalPlaces = items.map((item) => ({
-      id: item.filmingSeq._text,
-      movieTitle: item.movieTitle._text,
-      filmingLocation: item.filmingLocation._text,
-      productionYear: item.productionYear?._text ?? "N/A",
-      sceneDesc: item.sceneDesc?._text ?? "",
-      sido: item.sido._text,
-      lat: parseFloat(item.latitude._text),
-      lng: parseFloat(item.longitude._text),
-    }));
+    cachedMovieFilmPlaces = items
+      .filter(
+        (item) =>
+          item.sceneDesc &&
+          item.sceneDesc._text &&
+          item.sceneDesc._text.trim() !== ""
+      )
+      .map((item) => ({
+        id: item.filmingSeq._text,
+        movieTitle: item.movieTitle._text,
+        filmingLocation: item.filmingLocation._text,
+        productionYear: item.productionYear?._text ?? "N/A",
+        sceneDesc: item.sceneDesc?._text,
+        sido: item.sido._text,
+        lat: parseFloat(item.latitude._text),
+        lng: parseFloat(item.longitude._text),
+      }));
   } catch (error) {
     console.error("Failed to fetch external places:", error);
   }
 };
 
-async function fetchFestivalData() {
+const fetchTvFilmPlacesData = async () => {
+  try {
+    const url =
+      "https://docs.google.com/spreadsheets/d/1_rIz3FCXkfaua2fqwN5l2WmMZIkZxqwq/export?format=xlsx";
+    const response = await axios({
+      url,
+      method: "GET",
+      responseType: "arraybuffer",
+    });
+
+    const data = new Uint8Array(response.data);
+    const workbook = XLSX.read(data, { type: "array" });
+
+    const firstSheetName = workbook.SheetNames[0];
+    const worksheet = workbook.Sheets[firstSheetName];
+    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 2 });
+
+    cachedTvFilmPlaces = jsonData;
+  } catch (error) {
+    console.error("Error fetching or reading the Excel file", error);
+  }
+};
+
+const fetchSeoulFestivalData = async () => {
   try {
     let festivals = [];
     const KEY = seoulDataApiKey;
@@ -264,14 +300,6 @@ async function fetchFestivalData() {
   } catch (error) {
     console.error("Failed to fetch festival data:", error);
   }
-}
-
-setInterval(async () => {
-  await fetchExternalPlacesData();
-  await fetchFestivalData();
-}, 86400000);
-
-fetchExternalPlacesData();
-fetchFestivalData();
+};
 
 export default router;
