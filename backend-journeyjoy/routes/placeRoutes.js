@@ -16,25 +16,49 @@ const router = Router();
 let cachedFestivalData = [];
 let cachedMovieFilmPlaces = [];
 let cachedTvFilmPlaces = [];
+let lastUpdated = {
+  movieFilmPlaces: null,
+  tvFilmPlaces: null,
+  festivalData: null,
+};
 
-const fetchDataIfEmpty = async (cache, fetchFunction) => {
-  if (cache.length === 0) {
+const fetchDataIfEmptyOrExpired = async (cache, fetchFunction, key) => {
+  const now = new Date();
+  const oneWeek = 7 * 24 * 60 * 60 * 1000;
+  if (
+    cache.length === 0 ||
+    !lastUpdated[key] ||
+    now - lastUpdated[key] > oneWeek
+  ) {
     await fetchFunction();
+    lastUpdated[key] = now;
   }
 };
 
 const handleGetMovieFilmPlaces = async (req, res) => {
-  await fetchDataIfEmpty(cachedMovieFilmPlaces, fetchMovieFilmPlacesData);
+  await fetchDataIfEmptyOrExpired(
+    cachedMovieFilmPlaces,
+    fetchMovieFilmPlacesData,
+    "movieFilmPlaces"
+  );
   res.json(cachedMovieFilmPlaces);
 };
 
 const handleGetTvFilmPlaces = async (req, res) => {
-  await fetchDataIfEmpty(cachedTvFilmPlaces, fetchTvFilmPlacesData);
+  await fetchDataIfEmptyOrExpired(
+    cachedTvFilmPlaces,
+    fetchTvFilmPlacesData,
+    "tvFilmPlaces"
+  );
   res.json(cachedTvFilmPlaces);
 };
 
 const handleGetFestivals = async (req, res) => {
-  await fetchDataIfEmpty(cachedFestivalData, fetchSeoulFestivalData);
+  await fetchDataIfEmptyOrExpired(
+    cachedFestivalData,
+    fetchSeoulFestivalData,
+    "festivalData"
+  );
   res.json(cachedFestivalData);
 };
 
@@ -100,7 +124,6 @@ router.get("/:id", async (req, res, next) => {
   }
 });
 
-// 장소 업데이트
 router.put(
   "/:id",
   authenticateToken,
@@ -144,7 +167,6 @@ router.put(
   }
 );
 
-// 장소 삭제
 router.delete("/:id", authenticateToken, async (req, res, next) => {
   try {
     const place = await Place.findById(req.params.id);
@@ -181,7 +203,6 @@ router.get("/status/:status", async (req, res, next) => {
   }
 });
 
-// 장소 상태 업데이트
 router.put(
   "/:id/status",
   authenticateToken,
